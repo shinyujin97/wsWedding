@@ -24,7 +24,7 @@ export default function KakaoShare() {
       content: {
         title: '신우진 ♥ 박선영 결혼합니다',
         description: '2026년 10월 20일 토요일 오후 2시\n더 그레이스 웨딩홀',
-        imageUrl: `${window.location.origin}/og-image.jpg`,
+        imageUrl: `${window.location.origin}/Thumbnail.jpg`,
         link: {
           mobileWebUrl: window.location.href,
           webUrl: window.location.href,
@@ -51,7 +51,7 @@ export default function KakaoShare() {
     <>
       <Script
         src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
-        integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Ber32l"
+        integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka"
         crossOrigin="anonymous"
         onLoad={initKakao}
       />

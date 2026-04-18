@@ -32,7 +32,7 @@ export default function Home() {
         aria-hidden
         className="fixed inset-0 -z-10 hidden lg:block bg-cover bg-center"
         style={{
-          backgroundImage: "url('/images/frames/mainImage.png')",
+          backgroundImage: "url('/images/frames/mainImage.jpg')",
           filter: 'blur(40px) brightness(0.85)',
           transform: 'scale(1.15)',
         }}

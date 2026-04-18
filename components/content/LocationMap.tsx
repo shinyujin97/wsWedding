@@ -22,7 +22,7 @@ export default function LocationMap() {
   return (
     <>
       <Script
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`}
+        src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`}
         onLoad={() => window.kakao.maps.load(initMap)}
       />
       <section className="px-6 md:px-12 py-12 md:py-16">

@@ -6,14 +6,29 @@ export default function BackgroundMusic() {
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
-    // 모바일: 첫 터치/클릭 시 자동 재생
-    const tryPlay = () => {
-      audioRef.current?.play()
-        .then(() => setPlaying(true))
-        .catch(() => {});
+    const play = (): Promise<boolean> => {
+      const p = audioRef.current?.play();
+      if (!p) return Promise.resolve(false);
+      return p.then(() => { setPlaying(true); return true; }).catch(() => false);
     };
-    document.addEventListener('touchstart', tryPlay, { once: true });
-    document.addEventListener('click', tryPlay, { once: true });
+
+    // 먼저 autoplay 시도 (데스크탑 대부분 OK, 모바일은 막힘)
+    play().then((ok) => {
+      if (ok) return;
+      // 실패 시 첫 사용자 인터랙션 때 재생
+      const onInteract = () => {
+        play().then((started) => {
+          if (started) {
+            document.removeEventListener('touchstart', onInteract);
+            document.removeEventListener('click', onInteract);
+            document.removeEventListener('pointerdown', onInteract);
+          }
+        });
+      };
+      document.addEventListener('touchstart', onInteract);
+      document.addEventListener('click', onInteract);
+      document.addEventListener('pointerdown', onInteract);
+    });
   }, []);
 
   const toggle = () => {

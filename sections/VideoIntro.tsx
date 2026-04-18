@@ -58,21 +58,32 @@ export default function VideoIntro({ onComplete }: Props) {
     setActiveIdx(nextIdx);
   }, [onComplete]);
 
-  // waterv1 재생 시작되면 1초 간격으로 자막 인덱스 증가
+  // 영상 전환 시 자막 리셋 — 표시는 water 영상이 실제 재생돼 currentTime > 0 일 때부터 (onTimeUpdate)
   useEffect(() => {
-    if (activeIdx !== WATER_IDX) return;
-    setCaptionIdx(0);
-    const id = setInterval(() => {
-      setCaptionIdx(prev => {
-        if (prev >= WATER_CAPTIONS.length - 1) {
-          clearInterval(id);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 900);
-    return () => clearInterval(id);
+    setCaptionIdx(-1);
   }, [activeIdx]);
+
+  // 인트로 재생 중에 뒤이어 나올 MainSection 리소스(웨딩 사진 9장 + 메인 프레임 PNG) 프리페치
+  useEffect(() => {
+    const assets = [
+      '/images/frames/mainImage.jpg',
+      ...Array.from({ length: 9 }, (_, i) => `/weddingImages/1-${i + 1}.jpg`),
+    ];
+    assets.forEach((src) => {
+      const img = new window.Image();
+      img.src = src;
+    });
+  }, []);
+
+  // 영상의 currentTime 으로부터 자막 인덱스 계산 — 버퍼링/지연 시에도 동기 유지
+  const CAPTION_INTERVAL = 0.9; // 초
+  const handleTimeUpdate = (i: number) => (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (i !== WATER_IDX) return;
+    const t = e.currentTarget.currentTime;
+    if (t <= 0) return; // 아직 실제 재생 시작 전 (버퍼링 중 등) — 자막 숨김 유지
+    const idx = Math.min(Math.floor(t / CAPTION_INTERVAL), WATER_CAPTIONS.length - 1);
+    setCaptionIdx((prev) => (prev === idx ? prev : idx));
+  };
 
   return (
     <div className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] md:max-w-[720px] z-50 bg-[#FDFAF5]">
@@ -93,6 +104,7 @@ export default function VideoIntro({ onComplete }: Props) {
             autoPlay={i === 0}
             muted
             playsInline
+            preload="auto"
             aria-hidden
             className="absolute inset-0 w-full h-full object-cover"
             style={{
@@ -107,7 +119,9 @@ export default function VideoIntro({ onComplete }: Props) {
             autoPlay={i === 0}
             muted
             playsInline
+            preload="auto"
             onEnded={() => fadeToNext(i)}
+            onTimeUpdate={handleTimeUpdate(i)}
             className="absolute inset-0 w-full h-full object-contain"
           />
         </div>

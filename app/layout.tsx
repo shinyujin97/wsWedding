@@ -21,15 +21,19 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
+  // 배포 URL — 배포 후 실제 도메인으로 교체 (Vercel 기본은 *.vercel.app)
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   title: '신우진 ♥ 박선영 결혼합니다',
   description: '2025년 봄, 두 사람의 이야기에 함께해 주세요',
+  // 개인정보(실명·장소)가 평문 노출되므로 검색엔진 인덱싱 차단
+  robots: { index: false, follow: false },
   openGraph: {
     title: '신우진 ♥ 박선영 결혼합니다',
     description: '2025년 봄, 두 사람의 이야기에 함께해 주세요',
     images: [{
-      url: '/og-image.jpg',
-      width: 1200,
-      height: 630,
+      url: '/Thumbnail.jpg',
+      width: 1080,
+      height: 1935,
     }],
     locale: 'ko_KR',
     type: 'website',
