@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme {
+  --font-gowun: var(--font-gowun), "Nanum Myeongjo", serif;
+  --font-jua: var(--font-jua), sans-serif;
+  --font-cormorant: var(--font-cormorant), "Playfair Display", serif;
+}
+
 html, body {
   max-width: 430px;
   margin: 0 auto;
@@ -11,3 +17,14 @@ html, body {
 /* 스크롤바 숨김 (모바일) */
 body::-webkit-scrollbar { display: none; }
 body { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* VideoIntro 자막 페이드 */
+@keyframes captionFade {
+  0%   { opacity: 0; transform: translateY(8px); }
+  20%  { opacity: 1; transform: translateY(0); }
+  85%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+.animate-caption-fade {
+  animation: captionFade 0.9s ease-in-out forwards;
+}
