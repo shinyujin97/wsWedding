@@ -56,8 +56,8 @@ export default function KakaoShare() {
         onLoad={initKakao}
       />
 
-      <section className="px-6 py-12 space-y-3">
-        <p className="text-xs tracking-widest text-stone-400 text-center mb-6">
+      <section className="px-6 md:px-12 py-12 md:py-16 space-y-3 md:space-y-4">
+        <p className="text-xs md:text-sm tracking-widest text-stone-400 text-center mb-6 md:mb-8">
           SHARE
         </p>
 
@@ -65,8 +65,8 @@ export default function KakaoShare() {
         <button
           onClick={handleShare}
           disabled={!ready}
-          className="w-full flex items-center justify-center gap-2 px-5 py-4
-            rounded-2xl bg-[#FEE500] text-[#191919] font-medium text-sm
+          className="w-full flex items-center justify-center gap-2 px-5 py-4 md:py-5
+            rounded-2xl bg-[#FEE500] text-[#191919] font-medium text-sm md:text-base
             active:scale-[0.98] transition-transform disabled:opacity-50"
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -81,9 +81,9 @@ export default function KakaoShare() {
         {/* 링크 복사 */}
         <button
           onClick={handleCopyLink}
-          className="w-full flex items-center justify-center gap-2 px-5 py-4
+          className="w-full flex items-center justify-center gap-2 px-5 py-4 md:py-5
             rounded-2xl bg-stone-100 border border-stone-200
-            text-stone-600 font-medium text-sm
+            text-stone-600 font-medium text-sm md:text-base
             active:scale-[0.98] transition-transform"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

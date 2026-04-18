@@ -52,7 +52,7 @@ export default function InfoSection() {
   return (
     <motion.section
       ref={ref}
-      className="relative px-6 pt-20 pb-24 bg-[#FDFAF5]"
+      className="relative px-6 md:px-12 pt-20 md:pt-28 pb-24 md:pb-32 bg-[#FDFAF5]"
       style={{ opacity: sectionOpacity, y: sectionY }}
     >
       {/* 장식 구분선 */}
@@ -69,13 +69,13 @@ export default function InfoSection() {
       {/* 인사말 */}
       <AnimatedBlock index={1}>
         <div className="text-center space-y-3 mb-14">
-          <p className="text-[10px] tracking-[0.4em] text-stone-400 mb-5 uppercase">Invitation</p>
-          <p className="text-sm leading-8 text-stone-600 font-light" style={{ fontFamily: 'serif' }}>
+          <p className="text-[10px] md:text-xs tracking-[0.4em] text-stone-400 mb-5 uppercase">Invitation</p>
+          <p className="text-sm md:text-base leading-8 md:leading-9 text-stone-600 font-light" style={{ fontFamily: 'serif' }}>
             서로 다른 길을 걸어온 두 사람이
             <br />
             이제 같은 길을 함께 걸어가려 합니다.
           </p>
-          <p className="text-sm leading-8 text-stone-600 font-light mt-4" style={{ fontFamily: 'serif' }}>
+          <p className="text-sm md:text-base leading-8 md:leading-9 text-stone-600 font-light mt-4" style={{ fontFamily: 'serif' }}>
             저희의 새로운 시작을
             <br />
             축복해 주시면 감사하겠습니다.
@@ -88,20 +88,20 @@ export default function InfoSection() {
         <div className="text-center space-y-3 mb-14">
           <div className="flex items-center justify-center gap-6">
             <div className="text-right">
-              <p className="text-xs text-stone-400">
+              <p className="text-xs md:text-sm text-stone-400">
                 <span className="text-stone-600">OOO</span> &middot; <span className="text-stone-400">OOO</span>의 장남
               </p>
-              <p className="text-lg text-stone-800 mt-1 font-medium tracking-wide" style={{ fontFamily: 'serif' }}>
-                우진
+              <p className="text-lg md:text-2xl text-stone-800 mt-1 font-medium tracking-wide" style={{ fontFamily: 'serif' }}>
+                신우진
               </p>
             </div>
-            <div className="w-px h-10 bg-stone-200" />
+            <div className="w-px h-10 md:h-14 bg-stone-200" />
             <div className="text-left">
-              <p className="text-xs text-stone-400">
+              <p className="text-xs md:text-sm text-stone-400">
                 <span className="text-stone-600">OOO</span> &middot; <span className="text-stone-400">OOO</span>의 차녀
               </p>
-              <p className="text-lg text-stone-800 mt-1 font-medium tracking-wide" style={{ fontFamily: 'serif' }}>
-                선영
+              <p className="text-lg md:text-2xl text-stone-800 mt-1 font-medium tracking-wide" style={{ fontFamily: 'serif' }}>
+                박선영
               </p>
             </div>
           </div>
@@ -111,11 +111,11 @@ export default function InfoSection() {
       {/* 날짜 */}
       <AnimatedBlock index={3}>
         <div className="text-center mb-10">
-          <p className="text-[10px] tracking-[0.4em] text-stone-400 mb-3 uppercase">Date</p>
-          <p className="text-lg font-medium text-stone-700 tracking-wide" style={{ fontFamily: 'serif' }}>
+          <p className="text-[10px] md:text-xs tracking-[0.4em] text-stone-400 mb-3 uppercase">Date</p>
+          <p className="text-lg md:text-2xl font-medium text-stone-700 tracking-wide" style={{ fontFamily: 'serif' }}>
             2025년 9월 20일 토요일
           </p>
-          <p className="text-sm text-stone-400 mt-1">오후 2시 00분</p>
+          <p className="text-sm md:text-base text-stone-400 mt-1">오후 2시 00분</p>
         </div>
       </AnimatedBlock>
 
@@ -125,7 +125,7 @@ export default function InfoSection() {
           <p className="text-[10px] tracking-[0.3em] text-stone-400 text-center mb-5 uppercase">
             September 2026
           </p>
-          <div className="grid grid-cols-7 gap-y-2 gap-x-1 text-center text-xs max-w-[300px] mx-auto">
+          <div className="grid grid-cols-7 gap-y-2 md:gap-y-3 gap-x-1 md:gap-x-2 text-center text-xs md:text-sm max-w-[300px] md:max-w-[420px] mx-auto">
             {['일', '월', '화', '수', '목', '금', '토'].map((d) => (
               <span
                 key={d}
@@ -173,12 +173,12 @@ export default function InfoSection() {
       {/* 장소 */}
       <AnimatedBlock index={5}>
         <div className="text-center mb-10">
-          <p className="text-[10px] tracking-[0.4em] text-stone-400 mb-3 uppercase">Venue</p>
-          <p className="text-lg font-medium text-stone-700 tracking-wide" style={{ fontFamily: 'serif' }}>
+          <p className="text-[10px] md:text-xs tracking-[0.4em] text-stone-400 mb-3 uppercase">Venue</p>
+          <p className="text-lg md:text-2xl font-medium text-stone-700 tracking-wide" style={{ fontFamily: 'serif' }}>
             더 그레이스 웨딩홀
           </p>
-          <p className="text-sm text-stone-400 mt-1.5">서울특별시 강남구 테헤란로 123</p>
-          <p className="text-xs text-stone-300 mt-1">3층 그랜드볼룸</p>
+          <p className="text-sm md:text-base text-stone-400 mt-1.5">서울특별시 강남구 테헤란로 123</p>
+          <p className="text-xs md:text-sm text-stone-300 mt-1">3층 그랜드볼룸</p>
         </div>
       </AnimatedBlock>
 

@@ -25,6 +25,12 @@ export default function VideoIntro({ onComplete }: Props) {
   const video3 = useRef<HTMLVideoElement>(null);
   const refs = [video1, video2, video3];
 
+  // 블러 백드롭용 ref (메인 영상과 같이 재생)
+  const bg1 = useRef<HTMLVideoElement>(null);
+  const bg2 = useRef<HTMLVideoElement>(null);
+  const bg3 = useRef<HTMLVideoElement>(null);
+  const bgRefs = [bg1, bg2, bg3];
+
   // 각 영상의 opacity
   const [opacities, setOpacities] = useState([1, 0, 0]);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -38,8 +44,9 @@ export default function VideoIntro({ onComplete }: Props) {
       return;
     }
 
-    // 다음 영상 재생 시작
+    // 다음 영상 재생 시작 (메인 + 백드롭 동시)
     refs[nextIdx].current?.play();
+    bgRefs[nextIdx].current?.play();
 
     // 현재 영상 fade out → 다음 영상 fade in
     setOpacities(prev => {
@@ -68,23 +75,42 @@ export default function VideoIntro({ onComplete }: Props) {
   }, [activeIdx]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#FDFAF5]">
+    <div className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] md:max-w-[720px] z-50 bg-[#FDFAF5]">
       {VIDEOS.map((src, i) => (
-        <video
+        <div
           key={src}
-          ref={refs[i]}
-          src={src}
-          autoPlay={i === 0}
-          muted
-          playsInline
-          onEnded={() => fadeToNext(i)}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0"
           style={{
             opacity: opacities[i],
             transition: 'opacity 0.5s ease',
             zIndex: i,
           }}
-        />
+        >
+          {/* 블러 백드롭 (전 기기 공통 — 여백을 자연스럽게 채움) */}
+          <video
+            ref={bgRefs[i]}
+            src={src}
+            autoPlay={i === 0}
+            muted
+            playsInline
+            aria-hidden
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{
+              filter: 'blur(28px) brightness(0.9)',
+              transform: 'scale(1.1)',
+            }}
+          />
+          {/* 메인 영상 — 원본 비율 유지 (contain) */}
+          <video
+            ref={refs[i]}
+            src={src}
+            autoPlay={i === 0}
+            muted
+            playsInline
+            onEnded={() => fadeToNext(i)}
+            className="absolute inset-0 w-full h-full object-contain"
+          />
+        </div>
       ))}
 
       {/* waterv1 재생 중 연도 자막 (상단 배치) */}
@@ -92,7 +118,7 @@ export default function VideoIntro({ onComplete }: Props) {
         <div className="absolute inset-x-0 top-[18%] z-20 flex justify-center pointer-events-none">
           <p
             key={captionIdx}
-            className="text-center text-2xl font-jua tracking-[0.1em] animate-caption-fade"
+            className="text-center text-2xl md:text-4xl font-jua tracking-[0.1em] animate-caption-fade"
             style={{ color: '#6B5D4D' }}
           >
             {WATER_CAPTIONS[captionIdx]}

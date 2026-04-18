@@ -42,10 +42,10 @@ export default function WeddingInfo() {
       {/* 신랑 · 신부 */}
       <div className="info-card text-center space-y-2">
         <p className="text-sm text-stone-500">
-          <span className="text-stone-700 font-medium">OOO</span> · <span className="text-stone-400">OOO</span>의 장남 <span className="text-stone-800 font-semibold">우진</span>
+          <span className="text-stone-700 font-medium">OOO</span> · <span className="text-stone-400">OOO</span>의 장남 <span className="text-stone-800 font-semibold">신우진</span>
         </p>
         <p className="text-sm text-stone-500">
-          <span className="text-stone-700 font-medium">OOO</span> · <span className="text-stone-400">OOO</span>의 차녀 <span className="text-stone-800 font-semibold">선영</span>
+          <span className="text-stone-700 font-medium">OOO</span> · <span className="text-stone-400">OOO</span>의 차녀 <span className="text-stone-800 font-semibold">박선영</span>
         </p>
       </div>
 
