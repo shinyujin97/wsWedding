@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 
 // ==========================================================
 // DEBUG 모드: true 일 때 박스를 드래그/리사이즈해서 위치 조정 가능
@@ -25,17 +25,22 @@ const INITIAL_FRAMES = [
 
 type Frame = { id: number; x: number; y: number; w: number; h?: number; src: string };
 
-type Zoom = {
-  origin: { left: number; top: number; width: number; height: number };
-  scale: number;
-  tx: number;
-  ty: number;
-  constraints: { left: number; right: number; top: number; bottom: number };
+// 라이트박스 상태: null = 닫힘, 그 외 = 현재 보고 있는 사진 인덱스
+// view = 'single'(액자 캐러셀) | 'grid'(전체 사진 보기)
+type Lightbox = { index: number; view: 'single' | 'grid' };
+
+// 캐러셀 슬라이드 트랜지션 (방향에 따라 좌/우 진입)
+const slideVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? '60%' : '-60%', opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir > 0 ? '-60%' : '60%', opacity: 0 }),
 };
 
 export default function FrameTouches() {
   const [frames, setFrames] = useState<Frame[]>(INITIAL_FRAMES);
-  const [zoom, setZoom] = useState<Zoom | null>(null);
+  const [lightbox, setLightbox] = useState<Lightbox | null>(null);
+  // 슬라이드 진입 방향 (+1 = 다음, -1 = 이전) — variants custom 으로 사용
+  const [direction, setDirection] = useState(0);
   const [hintShown, setHintShown] = useState(true);
   // DEBUG 전용: main의 실제 width를 스케일만큼 키워서 레이아웃 차원에서 확대 (네이티브 렌더링 품질 유지)
   const [debugScale, setDebugScale] = useState(1);
@@ -152,57 +157,54 @@ export default function FrameTouches() {
   };
 
   // ==========================================================
-  // 줌인 — mainImage 고정된 채로 해당 액자로 "다가가는" 효과
-  // 섹션 전체(메인이미지 + 웨딩사진 오버레이)가 함께 스케일됨
+  // 라이트박스 열기 — 탭한 액자(index)의 사진을 액자 캐러셀로 표시
   // ==========================================================
-  const handleOpen = (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
+  const handleOpen = (index: number) => {
     if (DEBUG) return; // DEBUG 모드에서는 비활성
-    const button = e.currentTarget;
-    const section = button.closest('section');
-    if (!section) return;
-
-    const sectionRect = section.getBoundingClientRect();
-    const frameRect = button.getBoundingClientRect();
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-
-    const target = Math.min(vw, vh) * 0.75;
-    const scale = target / frameRect.width;
-
-    const sectionCx = sectionRect.left + sectionRect.width / 2;
-    const sectionCy = sectionRect.top + sectionRect.height / 2;
-    const frameCx = frameRect.left + frameRect.width / 2;
-    const frameCy = frameRect.top + frameRect.height / 2;
-
-    const newFrameCx = sectionCx + (frameCx - sectionCx) * scale;
-    const newFrameCy = sectionCy + (frameCy - sectionCy) * scale;
-
-    const scaledW = sectionRect.width * scale;
-    const scaledH = sectionRect.height * scale;
-    const constraints = {
-      left: vw - sectionCx - scaledW / 2,
-      right: scaledW / 2 - sectionCx,
-      top: vh - sectionCy - scaledH / 2,
-      bottom: scaledH / 2 - sectionCy,
-    };
-
-    setZoom({
-      // 정수 픽셀로 반올림 — 서브픽셀 위치로 인한 1px 씸/줄무늬 방지
-      origin: {
-        left: Math.round(sectionRect.left),
-        top: Math.round(sectionRect.top),
-        width: Math.round(sectionRect.width),
-        height: Math.round(sectionRect.height),
-      },
-      scale,
-      tx: vw / 2 - newFrameCx,
-      ty: vh / 2 - newFrameCy,
-      constraints,
-    });
+    setDirection(0);
+    setLightbox({ index, view: 'single' });
     setHintShown(false);
   };
 
-  const handleClose = () => setZoom(null);
+  const handleClose = () => setLightbox(null);
+
+  // 캐러셀 이동 (wrap-around) — dir: +1 다음 / -1 이전
+  const paginate = (dir: number) => {
+    setDirection(dir);
+    setLightbox((lb) =>
+      lb ? { ...lb, index: (lb.index + dir + frames.length) % frames.length } : lb
+    );
+  };
+
+  // 스와이프(드래그) 종료 시 거리·속도로 다음/이전 판정
+  const handleDragEnd = (_e: unknown, info: PanInfo) => {
+    const threshold = 60; // px
+    if (info.offset.x < -threshold || info.velocity.x < -400) paginate(1);
+    else if (info.offset.x > threshold || info.velocity.x > 400) paginate(-1);
+  };
+
+  // 모달 열려 있는 동안 body 스크롤 잠금 → 닫히면 복구
+  useEffect(() => {
+    if (!lightbox) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [lightbox]);
+
+  // 키보드 네비게이션 (PC 아티팩트 허용)
+  useEffect(() => {
+    if (!lightbox || lightbox.view !== 'single') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose();
+      else if (e.key === 'ArrowRight') paginate(1);
+      else if (e.key === 'ArrowLeft') paginate(-1);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightbox]);
 
   return (
     <>
@@ -210,7 +212,7 @@ export default function FrameTouches() {
         <button
           key={f.id}
           onPointerDown={DEBUG ? (e) => handlePointerDown(e, f.id, 'move') : undefined}
-          onClick={DEBUG ? undefined : (e) => handleOpen(e, f.id)}
+          onClick={DEBUG ? undefined : () => handleOpen(frames.indexOf(f))}
           aria-label={`사진 ${f.id}`}
           className={`absolute z-20 overflow-hidden ${
             DEBUG
@@ -298,73 +300,172 @@ export default function FrameTouches() {
         </>
       )}
 
+      {/* ==========================================================
+          라이트박스 모달 — 액자 캐러셀(single) / 전체보기(grid)
+          ========================================================== */}
       <AnimatePresence>
-        {zoom && (
+        {lightbox && (
           <motion.div
-            className="fixed inset-0 z-50 bg-black/75 overflow-hidden cursor-zoom-out"
+            className="fixed inset-0 z-50 flex flex-col"
+            style={{ backgroundColor: '#2F2120' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={handleClose}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
           >
-            <motion.div
-              style={{
-                position: 'absolute',
-                left: zoom.origin.left,
-                top: zoom.origin.top,
-                width: zoom.origin.width,
-                height: zoom.origin.height,
-                touchAction: 'none',
-              }}
-              initial={{ scale: 1, x: 0, y: 0 }}
-              animate={{ scale: zoom.scale, x: zoom.tx, y: zoom.ty }}
-              exit={{ scale: 1, x: 0, y: 0 }}
-              // 부드럽고 여유 있는 이징 (약 0.7s) — 감속형 커브로 끝에서 자연스럽게 안착
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              drag
-              dragConstraints={zoom.constraints}
-              dragElastic={0.15}
-              dragTransition={{ power: 0.18, timeConstant: 200 }}
-              whileDrag={{ cursor: 'grabbing' }}
-              className="cursor-grab"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* mainImage — <img> 대신 background-image 사용: 큰 텍스처 타일 경계 씸 방지 */}
-              <div
-                aria-hidden
-                className="absolute inset-0 select-none"
-                style={{
-                  backgroundImage: "url('/images/frames/mainImage.jpg')",
-                  backgroundSize: '100% 100%',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'center',
-                }}
-              />
-              {frames.map((f) => (
-                <img
-                  key={f.id}
-                  src={f.src}
-                  alt=""
-                  draggable={false}
-                  className="absolute object-cover select-none"
-                  style={{
-                    left: `${f.x}%`,
-                    top: `${f.y}%`,
-                    width: `${f.w}%`,
-                    // 실제 섹션과 동일한 사이즈 규칙 (h 있으면 사용, 없으면 0.85 비율)
-                    ...(f.h !== undefined ? { height: `${f.h}%` } : { aspectRatio: '0.85' }),
-                  }}
-                />
-              ))}
-            </motion.div>
+            {/* 상단 바 — 돌아가기 + (single일 때) 전체 사진 보기 토글 */}
+            <div className="relative z-10 flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
+              {/* single: 모달 닫기 / grid: 단일 캐러셀로 복귀 */}
+              <button
+                onClick={() =>
+                  lightbox.view === 'single'
+                    ? handleClose()
+                    : setLightbox((lb) => (lb ? { ...lb, view: 'single' } : lb))
+                }
+                className="font-jua text-white/90 text-sm md:text-base px-3.5 py-1.5 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-colors"
+              >
+                « 돌아가기
+              </button>
 
-            <button
-              onClick={handleClose}
-              className="absolute top-4 left-4 z-10 font-jua text-white text-sm md:text-base px-3.5 py-1.5 bg-black/50 hover:bg-black/70 rounded-full backdrop-blur-sm transition-colors"
-            >
-              « 돌아가기
-            </button>
+              {lightbox.view === 'single' ? (
+                <button
+                  onClick={() => setLightbox((lb) => (lb ? { ...lb, view: 'grid' } : lb))}
+                  className="font-jua text-white/90 text-xs md:text-sm px-3.5 py-1.5 rounded-full border border-[#D4A24A]/60 hover:bg-[#D4A24A]/20 transition-colors"
+                  style={{ color: '#F4E3C4' }}
+                >
+                  전체 사진 보기
+                </button>
+              ) : (
+                <button
+                  onClick={handleClose}
+                  aria-label="닫기"
+                  className="font-jua text-white/90 text-lg w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* ----- 단일 액자 캐러셀 ----- */}
+            {lightbox.view === 'single' && (
+              <div className="relative flex-1 min-h-0 flex items-center justify-center overflow-hidden">
+                {/* 슬라이드 영역 */}
+                <div className="relative w-full h-full flex items-center justify-center px-6">
+                  <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                    <motion.div
+                      key={lightbox.index}
+                      custom={direction}
+                      variants={slideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.4, ease: 'easeOut' }}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      dragElastic={0.18}
+                      onDragEnd={handleDragEnd}
+                      whileDrag={{ cursor: 'grabbing' }}
+                      className="absolute flex items-center justify-center cursor-grab touch-pan-y"
+                      style={{ width: 'min(86vw, 560px)' }}
+                    >
+                      {/* 장식 액자 — 크림 매트 + 얇은 골드 안쪽 라인 + 부드러운 외곽 그림자 */}
+                      <div
+                        className="relative max-h-[72vh] w-full select-none"
+                        style={{
+                          backgroundColor: '#FDFAF5',
+                          padding: 'clamp(14px, 4.5vw, 30px)',
+                          borderRadius: '4px',
+                          boxShadow:
+                            '0 24px 60px -12px rgba(0,0,0,0.6), 0 6px 18px rgba(0,0,0,0.35)',
+                        }}
+                      >
+                        {/* 얇은 안쪽 골드 라인 */}
+                        <div
+                          className="relative overflow-hidden"
+                          style={{
+                            border: '1px solid #D4A24A',
+                            padding: '4px',
+                            backgroundColor: '#FDFAF5',
+                          }}
+                        >
+                          <img
+                            src={frames[lightbox.index].src}
+                            alt={`웨딩 사진 ${lightbox.index + 1}`}
+                            draggable={false}
+                            className="block w-full max-h-[58vh] object-contain select-none"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* 이전 / 다음 어포던스 */}
+                  <button
+                    onClick={() => paginate(-1)}
+                    aria-label="이전 사진"
+                    className="absolute left-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white text-xl backdrop-blur-sm transition-colors"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    onClick={() => paginate(1)}
+                    aria-label="다음 사진"
+                    className="absolute right-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white text-xl backdrop-blur-sm transition-colors"
+                  >
+                    ›
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* single 위치 표시: 카운터 + 점 인디케이터 */}
+            {lightbox.view === 'single' && (
+              <div className="shrink-0 flex flex-col items-center gap-2 pb-6 pt-2">
+                <span className="font-jua text-xs tracking-[0.2em]" style={{ color: '#F4E3C4' }}>
+                  {lightbox.index + 1} / {frames.length}
+                </span>
+                <div className="flex gap-1.5">
+                  {frames.map((f, i) => (
+                    <span
+                      key={f.id}
+                      className="rounded-full transition-all duration-300"
+                      style={{
+                        width: i === lightbox.index ? '16px' : '6px',
+                        height: '6px',
+                        backgroundColor: i === lightbox.index ? '#D4A24A' : 'rgba(255,255,255,0.35)',
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ----- 전체 사진 보기 그리드 ----- */}
+            {lightbox.view === 'grid' && (
+              <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-8">
+                <div className="grid grid-cols-3 gap-2 md:gap-3 mx-auto max-w-[680px]">
+                  {frames.map((f, i) => (
+                    <button
+                      key={f.id}
+                      onClick={() => {
+                        setDirection(0);
+                        setLightbox({ index: i, view: 'single' });
+                      }}
+                      className="relative aspect-square overflow-hidden rounded-sm group"
+                      style={{ outline: '1px solid rgba(212,162,74,0.5)' }}
+                      aria-label={`사진 ${i + 1} 보기`}
+                    >
+                      <img
+                        src={f.src}
+                        alt={`웨딩 사진 ${i + 1}`}
+                        draggable={false}
+                        className="absolute inset-0 w-full h-full object-cover select-none transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
