@@ -41,3 +41,10 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# private media (사진/영상/음악 — public repo 제외)
+/public/video/
+/public/weddingImages/
+/public/music/
+/public/Thumbnail.jpg
+/public/images/frames/mainImage.jpg
