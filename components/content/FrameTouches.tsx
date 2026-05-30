@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
+import { media } from '@/lib/media';
 
 // ==========================================================
 // DEBUG 모드: true 일 때 박스를 드래그/리사이즈해서 위치 조정 가능
@@ -229,7 +230,7 @@ export default function FrameTouches() {
         >
           {/* 실제 웨딩 사진 — 액자 영역에 맞춰 채움 (DEBUG 모드에서도 그대로 보임) */}
           <img
-            src={f.src}
+            src={media(f.src)}
             alt=""
             draggable={false}
             className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
@@ -389,7 +390,7 @@ export default function FrameTouches() {
                           }}
                         >
                           <img
-                            src={frames[lightbox.index].src}
+                            src={media(frames[lightbox.index].src)}
                             alt={`웨딩 사진 ${lightbox.index + 1}`}
                             draggable={false}
                             className="block w-full max-h-[58vh] object-contain select-none"
@@ -456,7 +457,7 @@ export default function FrameTouches() {
                       aria-label={`사진 ${i + 1} 보기`}
                     >
                       <img
-                        src={f.src}
+                        src={media(f.src)}
                         alt={`웨딩 사진 ${i + 1}`}
                         draggable={false}
                         className="absolute inset-0 w-full h-full object-cover select-none transition-transform duration-300 group-hover:scale-105"

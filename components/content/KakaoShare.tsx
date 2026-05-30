@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Script from 'next/script';
+import { media } from '@/lib/media';
 
 declare global {
   interface Window { Kakao: any; }
@@ -24,7 +25,10 @@ export default function KakaoShare() {
       content: {
         title: '신우진 ♥ 박선영 결혼합니다',
         description: '2026년 10월 20일 토요일 오후 2시\n더 그레이스 웨딩홀',
-        imageUrl: `${window.location.origin}/Thumbnail.jpg`,
+        imageUrl: (() => {
+          const t = media('/Thumbnail.jpg');
+          return t.startsWith('http') ? t : `${window.location.origin}${t}`;
+        })(),
         link: {
           mobileWebUrl: window.location.href,
           webUrl: window.location.href,

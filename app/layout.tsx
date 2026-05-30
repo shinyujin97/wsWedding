@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Gowun_Dodum, Jua, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
+import { media } from '@/lib/media';
 
 const gowunDodum = Gowun_Dodum({
   subsets: ['latin'],
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     title: '신우진 ♥ 박선영 결혼합니다',
     description: '2025년 봄, 두 사람의 이야기에 함께해 주세요',
     images: [{
-      url: '/Thumbnail.jpg',
+      url: media('/Thumbnail.jpg'),
       width: 1080,
       height: 1935,
     }],

@@ -1,6 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import FrameTouches from '@/components/content/FrameTouches';
+import { media } from '@/lib/media';
 
 interface Props {
   onReplay?: () => void;
@@ -11,7 +12,7 @@ export default function MainSection({ onReplay }: Props) {
     <section className="relative w-full overflow-hidden">
       {/* 메인 이미지 */}
       <img
-        src="/images/frames/mainImage.jpg"
+        src={media('/images/frames/mainImage.jpg')}
         alt="우리, 결혼합니다"
         className="w-full h-auto"
       />

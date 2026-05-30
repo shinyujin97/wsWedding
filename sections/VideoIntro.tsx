@@ -1,12 +1,13 @@
 'use client';
 import { useRef, useState, useCallback, useEffect } from 'react';
+import { media } from '@/lib/media';
 
 // 영상 3개 순서 재생 (seed → waterv1 → treev2)
 // 전환: 현재 영상이 흐려지면서(fade out) 다음 영상이 드러남
 const VIDEOS = [
-  '/video/seed.mp4',
-  '/video/waterv1.mp4',
-  '/video/treev2.mp4',
+  media('/video/seed.mp4'),
+  media('/video/waterv1.mp4'),
+  media('/video/treev2.mp4'),
 ];
 
 // waterv1 재생은 VIDEOS 내 인덱스 1
@@ -66,8 +67,8 @@ export default function VideoIntro({ onComplete }: Props) {
   // 인트로 재생 중에 뒤이어 나올 MainSection 리소스(웨딩 사진 9장 + 메인 프레임 PNG) 프리페치
   useEffect(() => {
     const assets = [
-      '/images/frames/mainImage.jpg',
-      ...Array.from({ length: 9 }, (_, i) => `/weddingImages/1-${i + 1}.jpg`),
+      media('/images/frames/mainImage.jpg'),
+      ...Array.from({ length: 9 }, (_, i) => media(`/weddingImages/1-${i + 1}.jpg`)),
     ];
     assets.forEach((src) => {
       const img = new window.Image();
