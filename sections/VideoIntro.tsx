@@ -132,8 +132,11 @@ export default function VideoIntro({ onComplete }: Props) {
         <div className="absolute inset-x-0 top-[18%] z-20 flex justify-center pointer-events-none">
           <p
             key={captionIdx}
-            className="text-center text-2xl md:text-4xl font-jua tracking-[0.1em] animate-caption-fade"
-            style={{ color: '#6B5D4D' }}
+            className="text-center text-4xl md:text-6xl font-cormorant font-light italic tracking-[0.18em] animate-caption-fade"
+            style={{
+              color: '#6B5D4D',
+              textShadow: '0 1px 12px rgba(253,250,245,0.85), 0 0 24px rgba(217,186,140,0.35)',
+            }}
           >
             {WATER_CAPTIONS[captionIdx]}
           </p>
