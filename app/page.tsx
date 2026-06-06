@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import VideoIntro from '@/sections/VideoIntro';
 import MainSection from '@/sections/MainSection';
+import JourneySection from '@/sections/JourneySection';
 import InfoSection from '@/sections/InfoSection';
 import LocationMap from '@/components/content/LocationMap';
 import KakaoShare from '@/components/content/KakaoShare';
@@ -53,6 +54,7 @@ export default function Home() {
         {videosDone === true && (
           <>
             <MainSection onReplay={handleReplay} />
+            <JourneySection />
             <InfoSection />
             <LocationMap />
             <KakaoShare />

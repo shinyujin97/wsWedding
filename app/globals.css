@@ -3,7 +3,9 @@
 @theme {
   --font-gowun: var(--font-gowun), "Nanum Myeongjo", serif;
   --font-jua: var(--font-jua), sans-serif;
-  --font-cormorant: var(--font-cormorant), "Playfair Display", serif;}
+  --font-cormorant: var(--font-cormorant), "Playfair Display", serif;
+  --font-caption: var(--font-caption), sans-serif;
+}
 
 html, body {
   margin: 0;
@@ -16,11 +18,56 @@ html, body {
 body::-webkit-scrollbar { display: none; }
 body { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* 최종 연도(2026) — 수채 번짐에서 맺히며 점점 커진 뒤 유지 */
-@keyframes captionHold {
-  0%   { opacity: 0; filter: blur(14px); transform: translateY(10px) scale(0.7); }
-  100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+/* ── 여정(Journey) 섹션 애니메이션 ── */
+
+/* 종이비행기 부유 — 도착 후 제자리에서 살짝 떠 있는 느낌 */
+@keyframes planeFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
 }
-.animate-caption-hold {
-  animation: captionHold 1.6s ease-out forwards;
+.animate-plane-float {
+  animation: planeFloat 2.4s ease-in-out infinite;
+}
+
+/* 정거장 도트 팝 — 활성화 시 통통 튀며 등장 */
+@keyframes dotPop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.animate-dot-pop {
+  transform-box: fill-box; /* SVG 도트가 자기 중심 기준으로 스케일되도록 */
+  transform-origin: center;
+  animation: dotPop 0.5s ease-out;
+}
+
+/* 구름 드리프트 — 좌우로 아주 천천히 부유 */
+@keyframes cloudDrift {
+  from { transform: translateX(-7px); }
+  to { transform: translateX(7px); }
+}
+.animate-cloud-drift {
+  animation: cloudDrift 9s ease-in-out infinite alternate;
+}
+
+/* 낙엽 흔들림 — 바람에 살랑이는 잎 (회전 + 살짝 가라앉기) */
+@keyframes leafSway {
+  from { transform: rotate(-5deg) translateY(0); }
+  to { transform: rotate(5deg) translateY(3px); }
+}
+.animate-leaf-sway {
+  transform-box: fill-box; /* SVG 잎이 자기 중심 기준으로 회전하도록 */
+  transform-origin: center;
+  animation: leafSway 8s ease-in-out infinite alternate;
+}
+
+/* 착륙 링 펄스 — 도착 후 동심원이 은은하게 맥동 */
+@keyframes ringPulse {
+  from { opacity: 0.2; transform: scale(1); }
+  to { opacity: 0.45; transform: scale(1.12); }
+}
+.animate-ring-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ringPulse 2.4s ease-in-out infinite alternate;
 }

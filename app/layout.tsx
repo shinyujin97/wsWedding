@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Gowun_Dodum, Jua, Cormorant_Garamond } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import { media } from '@/lib/media';
 
@@ -20,6 +21,13 @@ const cormorant = Cormorant_Garamond({
   weight: ['300', '400', '500'],
   variable: '--font-cormorant',
 });
+// 인트로 연도 자막용 — 온글잎 밑미체 (손글씨, 무료 배포, 셀프호스팅)
+// 폰트 바꿀 땐 src만 교체 (후보: KorailRoundGothicBold.woff2)
+const captionFont = localFont({
+  src: './fonts/Ownglyph_meetme-Rg.woff2',
+  variable: '--font-caption',
+});
+
 export const metadata: Metadata = {
   // 배포 URL — 배포 후 실제 도메인으로 교체 (Vercel 기본은 *.vercel.app)
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
@@ -46,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className={`${gowunDodum.variable} ${jua.variable} ${cormorant.variable}`}>
+    <html lang="ko" className={`${gowunDodum.variable} ${jua.variable} ${cormorant.variable} ${captionFont.variable}`}>
       <body className="font-gowun">{children}</body>
     </html>
   );

@@ -12,6 +12,13 @@
 - 2026: tree 클립 상단 6%, `captionHold` 키프레임 (블러14px→0 + 0.7→1배 확대, 1.6s).
 - 클립 전환: 겹침 디졸브 — 끝나기 0.5초 전 다음 클립 미리 재생 + 0.5초 크로스페이드.
 
+### 연도 자막 폰트: 온글잎 밑미체 (확정 2026-06-06)
+- `app/fonts/Ownglyph_meetme-Rg.woff2` 셀프호스팅, `next/font/local` → `--font-caption` / `font-caption`.
+- 폰트 교체는 layout.tsx의 localFont src 한 줄만 갈면 됨 (예비 후보 KorailRoundGothicBold.woff2 보관 중).
+- 스타일: 올라가는 연도 = 진갈색 #5C4D3C + 아이보리 stroke 1px + 화이트 글로우 /
+  2026 = 아이보리 #FFFDF7 + 웜브라운 stroke 1.5px + 글로우, text-6xl.
+- 탈락 이력: Cormorant light italic → Bodoni → Georgia → 코레일 둥근고딕 → **밑미체 픽스**.
+
 자고 일어나서 이거 보고 이어가면 됨.
 
 ## 지금 어디까지 했나

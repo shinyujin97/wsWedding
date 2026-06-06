@@ -58,6 +58,8 @@ export default function VideoIntro({ onComplete }: Props) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [captionIdx, setCaptionIdx] = useState(-1);
   const [showFinalYear, setShowFinalYear] = useState(false);
+  // 나무(tree) 클립 재생 진행도 0~1 — 2026이 나무가 자라는 만큼 천천히 커지는 데 사용
+  const [treeProgress, setTreeProgress] = useState(0);
 
   // 이미 다음 클립으로 전환을 시작한 인덱스 (겹침 전환 + onEnded 안전망의 중복 호출 방지)
   const transitionedRef = useRef<Set<number>>(new Set());
@@ -124,6 +126,7 @@ export default function VideoIntro({ onComplete }: Props) {
   const handleTimeUpdate = (i: number) => (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const v = e.currentTarget;
     const t = v.currentTime;
+    const d = v.duration;
 
     // ① 연도 자막 (water 클립 한정) — 버퍼링/지연 시에도 currentTime 기준으로 동기
     if (i === WATER_IDX && t > 0) {
@@ -131,15 +134,16 @@ export default function VideoIntro({ onComplete }: Props) {
       setCaptionIdx((prev) => (prev === idx ? prev : idx));
     }
 
-    // ①-2 마지막 연도(2026) — 나무 클립이 디졸브를 마치고 자리잡은 뒤 표시
-    if (i === VIDEOS.length - 1 && t >= DISSOLVE && !showFinalYear) {
-      setShowFinalYear(true);
+    // ①-2 마지막 연도(2026) — 나무 클립이 디졸브를 마치고 자리잡은 뒤 표시.
+    //      나무가 자라는 동안(클립 앞 70%)만 같이 커지고, 다 자라면 고정.
+    if (i === VIDEOS.length - 1) {
+      if (d > 0) setTreeProgress(Math.min(t / (d * 0.7), 1));
+      if (t >= DISSOLVE && !showFinalYear) setShowFinalYear(true);
     }
 
     // ② 끝나기 lead초 전에 다음 클립 겹침 시작 (lead>0 클립만, 마지막 제외)
     //    lead=0 클립(seed)은 여기서 안 걸리고 onEnded→hold 경로로 전환된다.
     const lead = TRANSITION[i]?.lead ?? 0;
-    const d = v.duration;
     if (i < VIDEOS.length - 1 && lead > 0 && d > 0 && t >= d - lead) {
       fadeToNext(i);
     }
@@ -199,11 +203,11 @@ export default function VideoIntro({ onComplete }: Props) {
             style={{ top: `${CAPTION_TOP_START - idx * CAPTION_TOP_STEP}%` }}
           >
             <p
-              className="text-center text-3xl md:text-5xl tracking-[0.12em]"
+              className="text-center text-4xl md:text-6xl font-caption tracking-[0.12em]"
               style={{
-                fontFamily: "Georgia, 'Times New Roman', serif",
-                color: '#6B5D4D',
-                textShadow: '0 1px 12px rgba(253,250,245,0.85), 0 0 24px rgba(217,186,140,0.35)',
+                color: '#5C4D3C',
+                WebkitTextStroke: '1px rgba(253, 250, 245, 0.9)',
+                textShadow: '0 1px 14px rgba(253,250,245,0.95), 0 0 28px rgba(253,250,245,0.7), 0 0 40px rgba(217,186,140,0.4)',
                 opacity: state === 'active' ? 1 : 0,
                 filter: state === 'active' ? 'blur(0px)' : 'blur(10px)',
                 transform:
@@ -220,25 +224,29 @@ export default function VideoIntro({ onComplete }: Props) {
         );
       })}
 
-      {/* 나무(tree) 클립 — 최종 연도 2026, 중앙 최상단 (크라운 위), 사라지지 않고 유지 */}
-      {showFinalYear && (
-        <div
-          className="absolute inset-x-0 z-20 flex justify-center pointer-events-none"
-          style={{ top: `${CAPTION_TOP_FINAL}%` }}
+      {/* 나무(tree) 클립 — 최종 연도 2026: 번짐에서 맺힌 뒤, 나무 성장 진행도에 맞춰 천천히 커진다 */}
+      <div
+        className="absolute inset-x-0 z-20 flex justify-center pointer-events-none"
+        style={{ top: `${CAPTION_TOP_FINAL}%` }}
+      >
+        <p
+          className="text-center text-7xl md:text-9xl font-caption tracking-[0.12em]"
+          style={{
+            // 주황 단풍 크라운 위에서도 또렷하게 — 아이보리 화이트 + 웜브라운 테두리(stroke) + 글로우
+            color: '#FFFDF7',
+            WebkitTextStroke: '1.5px rgba(110, 70, 35, 0.85)',
+            textShadow: '0 2px 16px rgba(110,70,35,0.75), 0 0 36px rgba(90,55,25,0.55)',
+            opacity: showFinalYear ? 1 : 0,
+            filter: showFinalYear ? 'blur(0px)' : 'blur(12px)',
+            // 나무 성장(0→1)에 비례해 0.55배 → 1배 — onTimeUpdate(약 4Hz) 사이는 transition이 메꾼다
+            transform: `scale(${(0.55 + 0.45 * treeProgress).toFixed(3)})`,
+            transition: 'opacity 1.4s ease, filter 1.4s ease, transform 0.6s linear',
+            willChange: 'opacity, filter, transform',
+          }}
         >
-          <p
-            className="text-center text-5xl md:text-7xl tracking-[0.12em] animate-caption-hold"
-            style={{
-              fontFamily: "Georgia, 'Times New Roman', serif",
-              // 주황 단풍 크라운 위에서도 또렷하게 — 아이보리 화이트 + 진한 웜브라운 글로우
-              color: '#FFFDF7',
-              textShadow: '0 2px 14px rgba(110,70,35,0.6), 0 0 32px rgba(90,55,25,0.45)',
-            }}
-          >
-            {FINAL_YEAR}
-          </p>
-        </div>
-      )}
+          {FINAL_YEAR}
+        </p>
+      </div>
 
     </div>
   );
