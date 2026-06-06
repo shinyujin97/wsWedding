@@ -1,5 +1,18 @@
 # 작업 인계 메모 (2026-06-06)
 
+## 비행 일지(JourneySection) — 2026-06-06 저녁 신설
+- 메인↔인포 사이. 스크롤 연동 비행기(SVG getPointAtLength + framer-motion 스프링),
+  슝 트레일·스피드라인(속도 연동), 양방향 되감기, 손그림 잉크 두들(#C8552E 단일색).
+- 파일: sections/JourneySection.tsx, components/journey/*, lib/journey.ts
+- 도착 문구 "2026 가을/우리, 결혼합니다"는 InfoSection 도입부 (다이아몬드 위).
+- 메인 이미지: 가을 일러스트로 교체 (Blob `images/frames/mainImage.jpg`, 585KB 압축).
+  Blob 업로드는 대시보드 좌측 Storage → 스토어 → 폴더 들어가서 업로드 (CLI는 토큰 없어 막힘).
+
+## 클라이언트에게 받아야 할 것 (다음 작업)
+1. 마일스톤 실제 연혁 — lib/journey.ts SAMPLE_MILESTONES 교체 (연도+한줄+아이콘 10종 중 선택)
+2. 예식 날짜 통일 — InfoSection에 "2025년 9월 20일"인데 캘린더는 "September 2026" (불일치!)
+3. 카톡 썸네일(Thumbnail.jpg)도 새 일러스트로 바꿀지
+
 ## 확정된 연출 기법 (기록용)
 
 ### 연도 자막: 수채 번짐 모프 (blur crossfade morph)
