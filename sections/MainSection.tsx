@@ -20,6 +20,17 @@ export default function MainSection({ onReplay }: Props) {
       {/* 액자 터치 오버레이 */}
       <FrameTouches />
 
+      {/* 커플 컷아웃 레이어 — 사진(z-20)보다 위에 얹어, 겹치는 사진이 커플 "뒤로" 들어가 보이게.
+          원본에서 x28% y39% w46% 영역을 오려낸 투명 webp (배경제거: rembg) */}
+      <img
+        src={media('/images/frames/coupleCutout.webp')}
+        alt=""
+        aria-hidden
+        draggable={false}
+        className="absolute z-[25] pointer-events-none select-none"
+        style={{ left: '28%', top: '39%', width: '46%' }}
+      />
+
       {/* 영상 다시보기 버튼 — "우리, 결혼합니다" 텍스트 라인과 수직 정렬 */}
       {onReplay && (
         <button

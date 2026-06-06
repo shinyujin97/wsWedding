@@ -10,18 +10,18 @@ import { media } from '@/lib/media';
 // ==========================================================
 const DEBUG = false;
 
-// mainImage.png 위 9개 액자 위치 (%) — x/y는 좌상단, w는 이미지 폭 대비 %
+// 메인 일러스트 위 9개 액자 위치 (%) — x/y는 좌상단, w는 이미지 폭 대비 %
 // src = 액자 안에 배치될 실제 웨딩 사진
 const INITIAL_FRAMES = [
-  { id: 1,  x: 15.8, y: 36.4, w: 6.8, h: 5.2, src: '/weddingImages/1-1.jpg' },
-  { id: 3,  x: 8.7,  y: 49.8, w: 8.4, h: 7.1, src: '/weddingImages/1-2.jpg' },
-  { id: 4,  x: 21.9, y: 43.9, w: 8,   h: 6.2, src: '/weddingImages/1-3.jpg' },
-  { id: 5,  x: 41.1, y: 42.8, w: 8.7, h: 7.8, src: '/weddingImages/1-4.jpg' },
-  { id: 6,  x: 30.6, y: 53.6, w: 8.1, h: 6.6, src: '/weddingImages/1-5.jpg' },
-  { id: 8,  x: 60.6, y: 41.7, w: 9.2, h: 6.9, src: '/weddingImages/1-6.jpg' },
-  { id: 9,  x: 68.6, y: 52.2, w: 8.6, h: 6.6, src: '/weddingImages/1-7.jpg' },
-  { id: 10, x: 74.7, y: 41.7, w: 7.3, h: 6,   src: '/weddingImages/1-8.jpg' },
-  { id: 11, x: 84.7, y: 46.3, w: 8.3, h: 7.1, src: '/weddingImages/1-9.jpg' },
+  { id: 1,  x: 15.8, y: 37.2, w: 6.2, h: 4.8, src: '/weddingImages/1-1.jpg' },
+  { id: 3,  x: 8.5,  y: 50.4, w: 7.9, h: 6.6, src: '/weddingImages/1-2.jpg' },
+  { id: 4,  x: 22.2, y: 44.8, w: 6.6, h: 5.3, src: '/weddingImages/1-3.jpg' },
+  { id: 5,  x: 41.2, y: 43.6, w: 8.2, h: 7.2, src: '/weddingImages/1-4.jpg' },
+  { id: 6,  x: 31,   y: 54.5, w: 6.8, h: 5.3, src: '/weddingImages/1-5.jpg' },
+  { id: 8,  x: 60.9, y: 42.6, w: 8.6, h: 6.1, src: '/weddingImages/1-6.jpg' },
+  { id: 9,  x: 69.1, y: 52.7, w: 8.5, h: 6.2, src: '/weddingImages/1-7.jpg' },
+  { id: 10, x: 75.3, y: 42.5, w: 6.9, h: 5.5, src: '/weddingImages/1-8.jpg' },
+  { id: 11, x: 85.5, y: 47.1, w: 7.9, h: 6.2, src: '/weddingImages/1-9.jpg' },
 ];
 
 type Frame = { id: number; x: number; y: number; w: number; h?: number; src: string };

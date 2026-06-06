@@ -136,9 +136,11 @@ export default function VideoIntro({ onComplete }: Props) {
 
     // ①-2 마지막 연도(2026) — 나무 클립이 디졸브를 마치고 자리잡은 뒤 표시.
     //      나무가 자라는 동안(클립 앞 70%)만 같이 커지고, 다 자라면 고정.
-    if (i === VIDEOS.length - 1) {
-      if (d > 0) setTreeProgress(Math.min(t / (d * 0.7), 1));
-      if (t >= DISSOLVE && !showFinalYear) setShowFinalYear(true);
+    //      영상 막바지(75%~)엔 영상 자체 타이틀("우리, 결혼합니다")이 떠서 퇴장.
+    if (i === VIDEOS.length - 1 && d > 0) {
+      setTreeProgress(Math.min(t / (d * 0.7), 1));
+      const show = t >= DISSOLVE && t < d * 0.75;
+      if (show !== showFinalYear) setShowFinalYear(show);
     }
 
     // ② 끝나기 lead초 전에 다음 클립 겹침 시작 (lead>0 클립만, 마지막 제외)
