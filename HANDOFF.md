@@ -8,6 +8,14 @@
 - 메인 이미지: 가을 일러스트로 교체 (Blob `images/frames/mainImage.jpg`, 585KB 압축).
   Blob 업로드는 대시보드 좌측 Storage → 스토어 → 폴더 들어가서 업로드 (CLI는 토큰 없어 막힘).
 
+## 메인 일러스트 교체 후속 (2026-06-06 밤, 전부 배포·커밋 완료)
+- 커플 컷아웃 레이어: rembg로 오려낸 투명 webp(z-25)를 사진(z-20) 위에 — 사진이 커플 뒤로.
+  재생성법: 원본에서 x28% y39% w46% h54% crop → `python -c "from rembg import remove..."` → webp.
+- treev2 신규 영상: 마지막 프레임이 메인 화면과 동일 → 영상→본문 무결점 전환.
+  2026 자막은 영상 75% 지점에서 퇴장 (영상 자체 타이틀과 겹침 방지).
+- Blob 업로드: CLI는 토큰 없어 막힘(OIDC dev 미활성) → 대시보드 Storage에서 수동 업로드 중.
+  ⚙️ 숙제: 프로젝트 Settings → Security에서 OIDC를 Development에도 활성화하면 CLI 업로드 가능.
+
 ## 클라이언트에게 받아야 할 것 (다음 작업)
 1. 마일스톤 실제 연혁 — lib/journey.ts SAMPLE_MILESTONES 교체 (연도+한줄+아이콘 10종 중 선택)
 2. 예식 날짜 통일 — InfoSection에 "2025년 9월 20일"인데 캘린더는 "September 2026" (불일치!)
