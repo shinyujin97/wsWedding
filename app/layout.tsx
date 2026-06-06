@@ -20,7 +20,6 @@ const cormorant = Cormorant_Garamond({
   weight: ['300', '400', '500'],
   variable: '--font-cormorant',
 });
-
 export const metadata: Metadata = {
   // 배포 URL — 배포 후 실제 도메인으로 교체 (Vercel 기본은 *.vercel.app)
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),

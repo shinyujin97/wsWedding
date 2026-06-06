@@ -3,8 +3,7 @@
 @theme {
   --font-gowun: var(--font-gowun), "Nanum Myeongjo", serif;
   --font-jua: var(--font-jua), sans-serif;
-  --font-cormorant: var(--font-cormorant), "Playfair Display", serif;
-}
+  --font-cormorant: var(--font-cormorant), "Playfair Display", serif;}
 
 html, body {
   margin: 0;
@@ -17,13 +16,11 @@ html, body {
 body::-webkit-scrollbar { display: none; }
 body { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* VideoIntro 자막 페이드 */
-@keyframes captionFade {
-  0%   { opacity: 0; transform: translateY(8px); }
-  20%  { opacity: 1; transform: translateY(0); }
-  85%  { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-4px); }
+/* 최종 연도(2026) — 수채 번짐에서 맺히며 점점 커진 뒤 유지 */
+@keyframes captionHold {
+  0%   { opacity: 0; filter: blur(14px); transform: translateY(10px) scale(0.7); }
+  100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
 }
-.animate-caption-fade {
-  animation: captionFade 0.9s ease-in-out forwards;
+.animate-caption-hold {
+  animation: captionHold 1.6s ease-out forwards;
 }
