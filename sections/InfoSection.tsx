@@ -55,16 +55,9 @@ export default function InfoSection() {
       className="relative px-6 md:px-12 pt-4 md:pt-6 pb-24 md:pb-32 bg-[#FDFAF5]"
       style={{ opacity: sectionOpacity, y: sectionY }}
     >
-      {/* 여정 도착 문구 — 비행 일지의 종착지, 다이아몬드 장식 바로 위 */}
+      {/* 상단 다이아몬드 장식 */}
       <AnimatedBlock index={0}>
-        <div className="text-center mb-8">
-          <p className="font-caption text-3xl md:text-4xl leading-snug" style={{ color: '#5C4D3C' }}>
-            2026 가을
-            <br />
-            우리, 결혼합니다
-          </p>
-        </div>
-        <div className="flex items-center justify-center gap-4 mb-12">
+        <div className="flex items-center justify-center gap-4 mb-12 pt-4">
           <div className="h-px w-12 bg-stone-300/50" />
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.4"/>

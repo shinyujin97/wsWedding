@@ -20,17 +20,6 @@ export default function MainSection({ onReplay }: Props) {
       {/* 액자 터치 오버레이 */}
       <FrameTouches />
 
-      {/* 커플 컷아웃 레이어 — 사진(z-20)보다 위에 얹어, 겹치는 사진이 커플 "뒤로" 들어가 보이게.
-          원본에서 x28% y39% w46% 영역을 오려낸 투명 webp (배경제거: rembg) */}
-      <img
-        src={media('/images/frames/coupleCutout.webp')}
-        alt=""
-        aria-hidden
-        draggable={false}
-        className="absolute z-[25] pointer-events-none select-none"
-        style={{ left: '28%', top: '39%', width: '46%' }}
-      />
-
       {/* 영상 다시보기 버튼 — "우리, 결혼합니다" 텍스트 라인과 수직 정렬 */}
       {onReplay && (
         <button
@@ -63,22 +52,23 @@ export default function MainSection({ onReplay }: Props) {
         <p
           className="font-light px-3"
           style={{
-            color: '#FBF5E6',
+            color: '#3A2A22',
             fontFamily: 'serif',
             fontSize: 'clamp(1.05rem, 5.2vw, 2.25rem)',
             letterSpacing: '0.1em',
-            textShadow: '0 2px 10px rgba(74,30,15,0.85), 0 0 20px rgba(74,30,15,0.4)',
+            textShadow: '0 1px 6px rgba(255,255,255,0.85), 0 0 12px rgba(255,255,255,0.5)',
           }}
         >
           우리, 결혼합니다
         </p>
         <p
-          className="mt-3 font-medium px-3"
+          className="mt-3 font-bold px-3"
           style={{
-            color: '#FBF5E6',
-            fontSize: 'clamp(0.6rem, 2.6vw, 0.875rem)',
-            letterSpacing: '0.15em',
-            textShadow: '0 1px 8px rgba(74,30,15,0.95), 0 0 14px rgba(74,30,15,0.6)',
+            color: '#2E1B0F',
+            fontWeight: 800,
+            fontSize: 'clamp(0.95rem, 4vw, 1.35rem)',
+            letterSpacing: '0.18em',
+            textShadow: '0 1px 6px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.55)',
           }}
         >
           2026. 09. 20. SAT | 2:00 PM
@@ -95,11 +85,11 @@ export default function MainSection({ onReplay }: Props) {
         <p
           className="font-light px-3"
           style={{
-            color: '#FBF5E6',
+            color: '#3A2A22',
             fontFamily: 'serif',
             fontSize: 'clamp(0.95rem, 4.2vw, 1.5rem)',
             letterSpacing: '0.12em',
-            textShadow: '0 2px 8px rgba(74,30,15,0.85), 0 0 16px rgba(74,30,15,0.4)',
+            textShadow: '0 1px 6px rgba(255,255,255,0.85), 0 0 12px rgba(255,255,255,0.5)',
           }}
         >
           우진 &amp; 선영
@@ -107,10 +97,10 @@ export default function MainSection({ onReplay }: Props) {
         <p
           className="mt-2 px-3"
           style={{
-            color: '#F3E5C5',
+            color: '#4A2E1F',
             fontSize: 'clamp(0.6rem, 2.5vw, 0.875rem)',
             letterSpacing: '0.12em',
-            textShadow: '0 1px 5px rgba(74,30,15,0.8)',
+            textShadow: '0 1px 5px rgba(255,255,255,0.85)',
           }}
         >
           VENUE: 더 그레이스 웨딩홀

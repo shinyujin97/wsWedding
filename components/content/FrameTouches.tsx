@@ -10,21 +10,31 @@ import { media } from '@/lib/media';
 // ==========================================================
 const DEBUG = false;
 
-// 메인 일러스트 위 9개 액자 위치 (%) — x/y는 좌상단, w는 이미지 폭 대비 %
-// src = 액자 안에 배치될 실제 웨딩 사진
+// 메인 일러스트 위 5개 액자 위치 (%) — x/y는 좌상단, w/h는 이미지 폭/높이 대비 %
+// src = 액자 안에 배치될 실제 웨딩 사진. 좌표는 새 mainImage 기준 DEBUG로 맞춘 값.
 const INITIAL_FRAMES = [
-  { id: 1,  x: 15.8, y: 37.2, w: 6.2, h: 4.8, src: '/weddingImages/1-1.jpg' },
-  { id: 3,  x: 8.5,  y: 50.4, w: 7.9, h: 6.6, src: '/weddingImages/1-2.jpg' },
-  { id: 4,  x: 22.2, y: 44.8, w: 6.6, h: 5.3, src: '/weddingImages/1-3.jpg' },
-  { id: 5,  x: 41.2, y: 43.6, w: 8.2, h: 7.2, src: '/weddingImages/1-4.jpg' },
-  { id: 6,  x: 31,   y: 54.5, w: 6.8, h: 5.3, src: '/weddingImages/1-5.jpg' },
-  { id: 8,  x: 60.9, y: 42.6, w: 8.6, h: 6.1, src: '/weddingImages/1-6.jpg' },
-  { id: 9,  x: 69.1, y: 52.7, w: 8.5, h: 6.2, src: '/weddingImages/1-7.jpg' },
-  { id: 10, x: 75.3, y: 42.5, w: 6.9, h: 5.5, src: '/weddingImages/1-8.jpg' },
-  { id: 11, x: 85.5, y: 47.1, w: 7.9, h: 6.2, src: '/weddingImages/1-9.jpg' },
+  { id: 3,  x: 4.8,  y: 25.4, w: 10.2, h: 9.5, src: '/weddingImages/1-2.jpg' },
+  { id: 4,  x: 27.1, y: 31.8, w: 10.1, h: 9.1, src: '/weddingImages/1-3.jpg' },
+  { id: 6,  x: 44.2, y: 25.5, w: 10.1, h: 9.2, src: '/weddingImages/1-5.jpg' },
+  { id: 11, x: 61.9, y: 33.4, w: 9.9,  h: 9.2, src: '/weddingImages/1-9.jpg' },
+  { id: 9,  x: 78.3, y: 25,   w: 11,   h: 9.9, src: '/weddingImages/1-7.jpg' },
 ];
 
 type Frame = { id: number; x: number; y: number; w: number; h?: number; src: string };
+
+// 전체 웨딩 사진 갤러리 — 메인 페이지엔 위 5개 액자만 보이지만,
+// "전체 사진 보기" 그리드와 라이트박스 캐러셀은 이 전체 목록(9장)을 사용한다.
+const GALLERY = [
+  '/weddingImages/1-1.jpg',
+  '/weddingImages/1-2.jpg',
+  '/weddingImages/1-3.jpg',
+  '/weddingImages/1-4.jpg',
+  '/weddingImages/1-5.jpg',
+  '/weddingImages/1-6.jpg',
+  '/weddingImages/1-7.jpg',
+  '/weddingImages/1-8.jpg',
+  '/weddingImages/1-9.jpg',
+];
 
 // 라이트박스 상태: null = 닫힘, 그 외 = 현재 보고 있는 사진 인덱스
 // view = 'single'(액자 캐러셀) | 'grid'(전체 사진 보기)
@@ -173,7 +183,7 @@ export default function FrameTouches() {
   const paginate = (dir: number) => {
     setDirection(dir);
     setLightbox((lb) =>
-      lb ? { ...lb, index: (lb.index + dir + frames.length) % frames.length } : lb
+      lb ? { ...lb, index: (lb.index + dir + GALLERY.length) % GALLERY.length } : lb
     );
   };
 
@@ -213,7 +223,7 @@ export default function FrameTouches() {
         <button
           key={f.id}
           onPointerDown={DEBUG ? (e) => handlePointerDown(e, f.id, 'move') : undefined}
-          onClick={DEBUG ? undefined : () => handleOpen(frames.indexOf(f))}
+          onClick={DEBUG ? undefined : () => handleOpen(GALLERY.indexOf(f.src))}
           aria-label={`사진 ${f.id}`}
           className={`absolute z-20 overflow-hidden ${
             DEBUG
@@ -308,7 +318,12 @@ export default function FrameTouches() {
         {lightbox && (
           <motion.div
             className="fixed inset-0 z-50 flex flex-col"
-            style={{ backgroundColor: '#2F2120' }}
+            style={{
+              // 메인 가든 일러스트에 어울리는 화사한 웜 아이보리 ~ 세이지 그라데이션
+              // 순백은 피해 흰 액자가 부드러운 그림자로 분리되게 함
+              background:
+                'radial-gradient(120% 90% at 50% 18%, #F7F3EA 0%, #F1EEE3 42%, #E7ECDF 100%)',
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -323,7 +338,7 @@ export default function FrameTouches() {
                     ? handleClose()
                     : setLightbox((lb) => (lb ? { ...lb, view: 'single' } : lb))
                 }
-                className="font-jua text-white/90 text-sm md:text-base px-3.5 py-1.5 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-colors"
+                className="font-jua text-sm md:text-base px-3.5 py-1.5 rounded-full bg-white/70 hover:bg-white/90 text-stone-700 shadow-sm ring-1 ring-stone-300/70 backdrop-blur-sm transition-colors"
               >
                 « 돌아가기
               </button>
@@ -331,8 +346,7 @@ export default function FrameTouches() {
               {lightbox.view === 'single' ? (
                 <button
                   onClick={() => setLightbox((lb) => (lb ? { ...lb, view: 'grid' } : lb))}
-                  className="font-jua text-white/90 text-xs md:text-sm px-3.5 py-1.5 rounded-full border border-[#D4A24A]/60 hover:bg-[#D4A24A]/20 transition-colors"
-                  style={{ color: '#F4E3C4' }}
+                  className="font-jua text-xs md:text-sm px-3.5 py-1.5 rounded-full bg-white/70 hover:bg-white/90 text-stone-700 shadow-sm ring-1 ring-stone-300/70 backdrop-blur-sm transition-colors"
                 >
                   전체 사진 보기
                 </button>
@@ -340,7 +354,7 @@ export default function FrameTouches() {
                 <button
                   onClick={handleClose}
                   aria-label="닫기"
-                  className="font-jua text-white/90 text-lg w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  className="font-jua text-stone-700 text-lg w-9 h-9 flex items-center justify-center rounded-full bg-white/70 hover:bg-white/90 shadow-sm ring-1 ring-stone-300/70 transition-colors"
                 >
                   ✕
                 </button>
@@ -367,33 +381,29 @@ export default function FrameTouches() {
                       onDragEnd={handleDragEnd}
                       whileDrag={{ cursor: 'grabbing' }}
                       className="absolute flex items-center justify-center cursor-grab touch-pan-y"
-                      style={{ width: 'min(86vw, 560px)' }}
+                      style={{ width: 'min(88vw, 430px)' }}
                     >
-                      {/* 장식 액자 — 크림 매트 + 얇은 골드 안쪽 라인 + 부드러운 외곽 그림자 */}
+                      {/* 깔끔한 매트 액자 — 흰 여백(패스파르투) + 얇은 키라인 + 부드러운 그림자.
+                          사진은 잘리지 않게 object-contain (세로/가로 사진 모두 자연스럽게 담김) */}
                       <div
-                        className="relative max-h-[72vh] w-full select-none"
+                        className="relative w-full select-none"
                         style={{
-                          backgroundColor: '#FDFAF5',
-                          padding: 'clamp(14px, 4.5vw, 30px)',
-                          borderRadius: '4px',
+                          backgroundColor: '#FFFFFF',
+                          padding: 'clamp(12px, 4vw, 26px)',
+                          borderRadius: '2px',
                           boxShadow:
-                            '0 24px 60px -12px rgba(0,0,0,0.6), 0 6px 18px rgba(0,0,0,0.35)',
+                            '0 22px 50px -16px rgba(60,48,32,0.28), 0 6px 16px rgba(120,104,78,0.16)',
                         }}
                       >
-                        {/* 얇은 안쪽 골드 라인 */}
                         <div
                           className="relative overflow-hidden"
-                          style={{
-                            border: '1px solid #D4A24A',
-                            padding: '4px',
-                            backgroundColor: '#FDFAF5',
-                          }}
+                          style={{ boxShadow: 'inset 0 0 0 1px rgba(170,156,134,0.4)' }}
                         >
                           <img
-                            src={media(frames[lightbox.index].src)}
+                            src={media(GALLERY[lightbox.index])}
                             alt={`웨딩 사진 ${lightbox.index + 1}`}
                             draggable={false}
-                            className="block w-full max-h-[58vh] object-contain select-none"
+                            className="block w-full max-h-[64vh] object-contain select-none bg-white"
                           />
                         </div>
                       </div>
@@ -404,14 +414,14 @@ export default function FrameTouches() {
                   <button
                     onClick={() => paginate(-1)}
                     aria-label="이전 사진"
-                    className="absolute left-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white text-xl backdrop-blur-sm transition-colors"
+                    className="absolute left-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/70 hover:bg-white/90 text-stone-600 text-xl shadow-sm ring-1 ring-stone-300/70 backdrop-blur-sm transition-colors"
                   >
                     ‹
                   </button>
                   <button
                     onClick={() => paginate(1)}
                     aria-label="다음 사진"
-                    className="absolute right-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white text-xl backdrop-blur-sm transition-colors"
+                    className="absolute right-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/70 hover:bg-white/90 text-stone-600 text-xl shadow-sm ring-1 ring-stone-300/70 backdrop-blur-sm transition-colors"
                   >
                     ›
                   </button>
@@ -422,18 +432,18 @@ export default function FrameTouches() {
             {/* single 위치 표시: 카운터 + 점 인디케이터 */}
             {lightbox.view === 'single' && (
               <div className="shrink-0 flex flex-col items-center gap-2 pb-6 pt-2">
-                <span className="font-jua text-xs tracking-[0.2em]" style={{ color: '#F4E3C4' }}>
-                  {lightbox.index + 1} / {frames.length}
+                <span className="font-jua text-xs tracking-[0.2em]" style={{ color: '#7A6F5E' }}>
+                  {lightbox.index + 1} / {GALLERY.length}
                 </span>
                 <div className="flex gap-1.5">
-                  {frames.map((f, i) => (
+                  {GALLERY.map((src, i) => (
                     <span
-                      key={f.id}
+                      key={src}
                       className="rounded-full transition-all duration-300"
                       style={{
                         width: i === lightbox.index ? '16px' : '6px',
                         height: '6px',
-                        backgroundColor: i === lightbox.index ? '#D4A24A' : 'rgba(255,255,255,0.35)',
+                        backgroundColor: i === lightbox.index ? '#8C7B63' : 'rgba(140,123,99,0.3)',
                       }}
                     />
                   ))}
@@ -445,19 +455,19 @@ export default function FrameTouches() {
             {lightbox.view === 'grid' && (
               <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-8">
                 <div className="grid grid-cols-3 gap-2 md:gap-3 mx-auto max-w-[680px]">
-                  {frames.map((f, i) => (
+                  {GALLERY.map((src, i) => (
                     <button
-                      key={f.id}
+                      key={src}
                       onClick={() => {
                         setDirection(0);
                         setLightbox({ index: i, view: 'single' });
                       }}
                       className="relative aspect-square overflow-hidden rounded-sm group"
-                      style={{ outline: '1px solid rgba(212,162,74,0.5)' }}
+                      style={{ outline: '1px solid rgba(140,123,99,0.4)' }}
                       aria-label={`사진 ${i + 1} 보기`}
                     >
                       <img
-                        src={media(f.src)}
+                        src={media(src)}
                         alt={`웨딩 사진 ${i + 1}`}
                         draggable={false}
                         className="absolute inset-0 w-full h-full object-cover select-none transition-transform duration-300 group-hover:scale-105"

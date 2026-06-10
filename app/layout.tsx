@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Gowun_Dodum, Jua, Cormorant_Garamond } from 'next/font/google';
+import { Gowun_Dodum, Jua, Cormorant_Garamond, Playfair_Display, Fjalla_One } from 'next/font/google';
 import localFont from 'next/font/local';
 import './globals.css';
 import { media } from '@/lib/media';
@@ -20,6 +20,18 @@ const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   weight: ['300', '400', '500'],
   variable: '--font-cormorant',
+});
+// 인트로 연도(2016~2026)용 — 고급 에디토리얼 세리프
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-playfair',
+});
+// 연도용 콘덴스드 디스플레이
+const fjalla = Fjalla_One({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-fjalla',
 });
 // 인트로 연도 자막용 — 온글잎 밑미체 (손글씨, 무료 배포, 셀프호스팅)
 // 폰트 바꿀 땐 src만 교체 (후보: KorailRoundGothicBold.woff2)
@@ -54,7 +66,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className={`${gowunDodum.variable} ${jua.variable} ${cormorant.variable} ${captionFont.variable}`}>
+    <html lang="ko" className={`${gowunDodum.variable} ${jua.variable} ${cormorant.variable} ${playfair.variable} ${fjalla.variable} ${captionFont.variable}`}>
       <body className="font-gowun">{children}</body>
     </html>
   );

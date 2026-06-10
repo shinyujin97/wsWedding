@@ -4,6 +4,8 @@
   --font-gowun: var(--font-gowun), "Nanum Myeongjo", serif;
   --font-jua: var(--font-jua), sans-serif;
   --font-cormorant: var(--font-cormorant), "Playfair Display", serif;
+  --font-playfair: var(--font-playfair), "Playfair Display", serif;
+  --font-fjalla: var(--font-fjalla), "Fjalla One", sans-serif;
   --font-caption: var(--font-caption), sans-serif;
 }
 
