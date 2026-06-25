@@ -1,7 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Script from 'next/script';
-import { media } from '@/lib/media';
+
+// 카톡/OG 공유 썸네일 (Blob, 새 가든 일러스트 — 새 URL로 캐시·재스크랩 유도)
+const THUMBNAIL_URL =
+  'https://304umf8a11s9xgqf.public.blob.vercel-storage.com/Thumbnail-v2-eBelCLJ9EmU62Xaa4qSc3oSpa2JOuM.jpg';
 
 declare global {
   interface Window { Kakao: any; }
@@ -11,24 +14,37 @@ export default function KakaoShare() {
   const [ready, setReady] = useState(false);
 
   const initKakao = () => {
-    if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_APP_KEY);
-    }
-    setReady(true);
+    try {
+      if (window.Kakao && !window.Kakao.isInitialized()) {
+        window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_APP_KEY);
+      }
+    } catch { /* init 중복/실패해도 무시 */ }
+    if (window.Kakao) setReady(true); // SDK 있으면 무조건 버튼 활성화
   };
 
+  // SDK 준비 여부를 직접 폴링해 "마운트될 때마다" 확실히 초기화·활성화한다.
+  // (next/script onLoad는 스크립트 최초 로드 시 1회만 불려서, 재마운트(영상 다시보기 등) 시
+  //  버튼이 비활성으로 남는 문제가 있었음)
+  useEffect(() => {
+    let tries = 0;
+    const id = setInterval(() => {
+      tries += 1;
+      if (window.Kakao) { clearInterval(id); initKakao(); }
+      else if (tries > 100) clearInterval(id); // ~10초 후 포기
+    }, 100);
+    return () => clearInterval(id);
+  }, []);
+
   const handleShare = () => {
-    if (!window.Kakao) return;
+    if (!window.Kakao) { alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해주세요.'); return; }
+    if (!window.Kakao.isInitialized()) initKakao();
 
     window.Kakao.Share.sendDefault({
       objectType: 'feed',
       content: {
         title: '신우진 ♥ 박선영 결혼합니다',
-        description: '2026년 10월 20일 토요일 오후 2시\n더 그레이스 웨딩홀',
-        imageUrl: (() => {
-          const t = media('/Thumbnail.jpg');
-          return t.startsWith('http') ? t : `${window.location.origin}${t}`;
-        })(),
+        description: '2026년 9월 20일 일요일 오후 2시\n더 그레이스 웨딩홀',
+        imageUrl: THUMBNAIL_URL,
         link: {
           mobileWebUrl: window.location.href,
           webUrl: window.location.href,

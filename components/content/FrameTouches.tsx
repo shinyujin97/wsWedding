@@ -269,7 +269,8 @@ export default function FrameTouches() {
       {hintShown && !DEBUG && (
         <span
           className="absolute z-20 -translate-x-1/2 text-[9px] md:text-[12px] font-jua tracking-[0.15em] px-2 py-0.5 rounded-full bg-white/85 text-stone-700 shadow-sm whitespace-nowrap animate-pulse pointer-events-none"
-          style={{ left: '50%', top: '40%' }}
+          /* 중앙 액자(id6: x44.2 y25.5 w10.1) 오른쪽 위 모서리 근처 */
+          style={{ left: '56%', top: '22%' }}
         >
           터치
         </span>

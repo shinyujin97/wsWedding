@@ -113,7 +113,7 @@ export default function InfoSection() {
         <div className="text-center mb-10">
           <p className="text-[10px] md:text-xs tracking-[0.4em] text-stone-400 mb-3 uppercase">Date</p>
           <p className="text-lg md:text-2xl font-medium text-stone-700 tracking-wide" style={{ fontFamily: 'serif' }}>
-            2025년 9월 20일 토요일
+            2026년 9월 20일 일요일
           </p>
           <p className="text-sm md:text-base text-stone-400 mt-1">오후 2시 00분</p>
         </div>
@@ -136,13 +136,14 @@ export default function InfoSection() {
                 {d}
               </span>
             ))}
-            {/* 9월 1일 = 월요일 → 앞에 빈칸 1개 */}
+            {/* 2026년 9월 1일 = 화요일 → 앞에 빈칸 2개 (일·월 칸) */}
+            <span />
             <span />
             {Array.from({ length: 30 }, (_, i) => i + 1).map((day) => {
-              const dayOfWeek = (day) % 7; // 1=Mon offset: day 1 -> col 1(Mon)
+              const col = (day + 1) % 7; // 일=0 ... 토=6 (9/1=화=col2 기준)
               const isWeddingDay = day === 20;
-              const isSunday = dayOfWeek === 6; // day 7=Sun(col0), day 14=Sun...
-              const isSaturday = dayOfWeek === 5;
+              const isSunday = col === 0;
+              const isSaturday = col === 6;
 
               return (
                 <span

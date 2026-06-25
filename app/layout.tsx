@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import { Gowun_Dodum, Jua, Cormorant_Garamond, Playfair_Display, Fjalla_One } from 'next/font/google';
 import localFont from 'next/font/local';
 import './globals.css';
-import { media } from '@/lib/media';
+
+// 카톡/OG 공유 썸네일 (Blob, 새 가든 일러스트 — 새 URL로 재스크랩 유도)
+const THUMBNAIL_URL =
+  'https://304umf8a11s9xgqf.public.blob.vercel-storage.com/Thumbnail-v2-eBelCLJ9EmU62Xaa4qSc3oSpa2JOuM.jpg';
 
 const gowunDodum = Gowun_Dodum({
   subsets: ['latin'],
@@ -44,16 +47,16 @@ export const metadata: Metadata = {
   // 배포 URL — 배포 후 실제 도메인으로 교체 (Vercel 기본은 *.vercel.app)
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   title: '신우진 ♥ 박선영 결혼합니다',
-  description: '2025년 봄, 두 사람의 이야기에 함께해 주세요',
+  description: '2026년 9월 20일 일요일 오후 2시 · 더 그레이스 웨딩홀',
   // 개인정보(실명·장소)가 평문 노출되므로 검색엔진 인덱싱 차단
   robots: { index: false, follow: false },
   openGraph: {
     title: '신우진 ♥ 박선영 결혼합니다',
-    description: '2025년 봄, 두 사람의 이야기에 함께해 주세요',
+    description: '2026년 9월 20일 일요일 오후 2시 · 더 그레이스 웨딩홀',
     images: [{
-      url: media('/Thumbnail.jpg'),
-      width: 1080,
-      height: 1935,
+      url: THUMBNAIL_URL,
+      width: 1023,
+      height: 1538,
     }],
     locale: 'ko_KR',
     type: 'website',

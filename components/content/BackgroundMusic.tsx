@@ -40,7 +40,7 @@ export default function BackgroundMusic() {
 
   return (
     <>
-      <audio ref={audioRef} src={media('/music/Autumn Tree of Us.mp3')} loop />
+      <audio ref={audioRef} src={media('/music/SunlitStringWaltz.mp3')} loop />
       <button
         onClick={toggle}
         className="fixed top-4 right-4 z-50 w-9 h-9 rounded-full

@@ -12,7 +12,7 @@ export default function MainSection({ onReplay }: Props) {
     <section className="relative w-full overflow-hidden">
       {/* 메인 이미지 */}
       <img
-        src={media('/images/frames/mainImage.jpg')}
+        src={media('/images/frames/mainImage.jpg?v=2')}
         alt="우리, 결혼합니다"
         className="w-full h-auto"
       />
@@ -71,7 +71,7 @@ export default function MainSection({ onReplay }: Props) {
             textShadow: '0 1px 6px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.55)',
           }}
         >
-          2026. 09. 20. SAT | 2:00 PM
+          2026. 09. 20. SUN | 2:00 PM
         </p>
       </motion.div>
 
