@@ -4,6 +4,8 @@ import VideoIntro from '@/sections/VideoIntro';
 import MainSection from '@/sections/MainSection';
 import InfoSection from '@/sections/InfoSection';
 import LocationMap from '@/components/content/LocationMap';
+import AccountsSection from '@/sections/AccountsSection';
+import NoticeSection from '@/sections/NoticeSection';
 import KakaoShare from '@/components/content/KakaoShare';
 import BackgroundMusic from '@/components/content/BackgroundMusic';
 import { media } from '@/lib/media';
@@ -55,6 +57,8 @@ export default function Home() {
             <MainSection onReplay={handleReplay} />
             <InfoSection />
             <LocationMap />
+            <AccountsSection />
+            <NoticeSection />
             <KakaoShare />
           </>
         )}

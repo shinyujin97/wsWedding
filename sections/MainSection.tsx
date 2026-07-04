@@ -50,28 +50,29 @@ export default function MainSection({ onReplay }: Props) {
         transition={{ duration: 1, delay: 0.3 }}
       >
         <p
-          className="font-light px-3"
+          className="px-3"
           style={{
-            color: '#3A2A22',
+            color: '#1F120A',
             fontFamily: 'serif',
+            fontWeight: 700,
             fontSize: 'clamp(1.05rem, 5.2vw, 2.25rem)',
             letterSpacing: '0.1em',
-            textShadow: '0 1px 6px rgba(255,255,255,0.85), 0 0 12px rgba(255,255,255,0.5)',
+            textShadow: '0 1px 6px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.6)',
           }}
         >
           우리, 결혼합니다
         </p>
         <p
-          className="mt-3 font-bold px-3"
+          className="mt-3 px-3"
           style={{
-            color: '#2E1B0F',
-            fontWeight: 800,
+            color: '#160C05',
+            fontWeight: 900,
             fontSize: 'clamp(0.95rem, 4vw, 1.35rem)',
             letterSpacing: '0.18em',
-            textShadow: '0 1px 6px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.55)',
+            textShadow: '0 1px 6px rgba(255,255,255,0.95), 0 0 12px rgba(255,255,255,0.6)',
           }}
         >
-          2026. 09. 20. SUN | 2:00 PM
+          2026. 10. 17. SAT | 12:50 PM
         </p>
       </motion.div>
 

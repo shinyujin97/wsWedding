@@ -11,12 +11,14 @@ interface Props {
 
 export default function VideoIntro({ onComplete }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const bgRef = useRef<HTMLVideoElement>(null);
 
-  // 인트로 재생 중에 뒤이어 나올 MainSection 리소스(웨딩 사진 9장 + 메인 프레임) 프리페치
+  // 인트로 재생 중에 뒤이어 나올 MainSection 리소스(메인 일러스트 + 액자 대표 5장) 프리페치
+  // 전체보기 갤러리(20장)는 액자 터치 시점에 로드되므로 프리페치 대상에서 제외.
   useEffect(() => {
     const assets = [
       media('/images/frames/mainImage.jpg?v=2'),
-      ...Array.from({ length: 9 }, (_, i) => media(`/weddingImages/1-${i + 1}.jpg`)),
+      ...Array.from({ length: 5 }, (_, i) => media(`/weddingImages/main-${i + 1}.jpg`)),
     ];
     assets.forEach((src) => {
       const img = new window.Image();
@@ -28,6 +30,7 @@ export default function VideoIntro({ onComplete }: Props) {
     <div className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] md:max-w-[720px] z-50 bg-[#FDFAF5]">
       {/* 블러 백드롭 (전 기기 공통 — 여백을 자연스럽게 채움) */}
       <video
+        ref={bgRef}
         src={INTRO_VIDEO}
         autoPlay
         muted

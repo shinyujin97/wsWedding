@@ -11,33 +11,28 @@ import { media } from '@/lib/media';
 const DEBUG = false;
 
 // 메인 일러스트 위 5개 액자 위치 (%) — x/y는 좌상단, w/h는 이미지 폭/높이 대비 %
-// src = 액자 안에 배치될 실제 웨딩 사진. 좌표는 새 mainImage 기준 DEBUG로 맞춘 값.
+// src = 액자 안에 배치될 대표 사진 (좌→우). 좌표는 mainImage 기준 DEBUG로 맞춘 값.
 const INITIAL_FRAMES = [
-  { id: 3,  x: 4.8,  y: 25.4, w: 10.2, h: 9.5, src: '/weddingImages/1-2.jpg' },
-  { id: 4,  x: 27.1, y: 31.8, w: 10.1, h: 9.1, src: '/weddingImages/1-3.jpg' },
-  { id: 6,  x: 44.2, y: 25.5, w: 10.1, h: 9.2, src: '/weddingImages/1-5.jpg' },
-  { id: 11, x: 61.9, y: 33.4, w: 9.9,  h: 9.2, src: '/weddingImages/1-9.jpg' },
-  { id: 9,  x: 78.3, y: 25,   w: 11,   h: 9.9, src: '/weddingImages/1-7.jpg' },
+  { id: 3,  x: 4.8,  y: 25.4, w: 10.2, h: 9.5, src: '/weddingImages/main-1.jpg' }, // 소파
+  { id: 4,  x: 27.1, y: 31.8, w: 10.1, h: 9.1, src: '/weddingImages/main-2.jpg' }, // 정원
+  { id: 6,  x: 44.2, y: 25.5, w: 10.1, h: 9.2, src: '/weddingImages/main-3.jpg' }, // 풍선
+  { id: 11, x: 61.9, y: 33.4, w: 9.9,  h: 9.2, src: '/weddingImages/main-4.jpg' }, // 케이크
+  { id: 9,  x: 78.3, y: 25,   w: 11,   h: 9.9, src: '/weddingImages/main-5.jpg' }, // 야경
 ];
 
 type Frame = { id: number; x: number; y: number; w: number; h?: number; src: string };
 
-// 전체 웨딩 사진 갤러리 — 메인 페이지엔 위 5개 액자만 보이지만,
-// "전체 사진 보기" 그리드와 라이트박스 캐러셀은 이 전체 목록(9장)을 사용한다.
-const GALLERY = [
-  '/weddingImages/1-1.jpg',
-  '/weddingImages/1-2.jpg',
-  '/weddingImages/1-3.jpg',
-  '/weddingImages/1-4.jpg',
-  '/weddingImages/1-5.jpg',
-  '/weddingImages/1-6.jpg',
-  '/weddingImages/1-7.jpg',
-  '/weddingImages/1-8.jpg',
-  '/weddingImages/1-9.jpg',
-];
+// 액자 대표 사진 5장 (좌→우)
+const FRAME_PHOTOS = INITIAL_FRAMES.map((f) => f.src);
 
-// 라이트박스 상태: null = 닫힘, 그 외 = 현재 보고 있는 사진 인덱스
-// view = 'single'(액자 캐러셀) | 'grid'(전체 사진 보기)
+// 일반 갤러리 사진 20장
+const GALLERY = Array.from({ length: 20 }, (_, i) => `/weddingImages/1-${i + 1}.jpg`);
+
+// 라이트박스/그리드가 쓰는 전체 사진(25장): 액자 대표 5장 → 갤러리 20장 순서.
+// 액자를 터치하면 해당 사진(앞쪽 5장 중 하나)부터 시작해 전체를 넘겨볼 수 있다.
+const ALL_PHOTOS = [...FRAME_PHOTOS, ...GALLERY];
+
+// 라이트박스 상태: null = 닫힘. view = 'single'(캐러셀) | 'grid'(전체 사진 보기)
 type Lightbox = { index: number; view: 'single' | 'grid' };
 
 // 캐러셀 슬라이드 트랜지션 (방향에 따라 좌/우 진입)
@@ -168,7 +163,7 @@ export default function FrameTouches() {
   };
 
   // ==========================================================
-  // 라이트박스 열기 — 탭한 액자(index)의 사진을 액자 캐러셀로 표시
+  // 라이트박스 열기 — 탭한 사진(ALL_PHOTOS 인덱스)부터 전체 캐러셀로 표시
   // ==========================================================
   const handleOpen = (index: number) => {
     if (DEBUG) return; // DEBUG 모드에서는 비활성
@@ -179,11 +174,11 @@ export default function FrameTouches() {
 
   const handleClose = () => setLightbox(null);
 
-  // 캐러셀 이동 (wrap-around) — dir: +1 다음 / -1 이전
+  // 캐러셀 이동 (wrap-around) — dir: +1 다음 / -1 이전. 전체 사진 길이로 순환.
   const paginate = (dir: number) => {
     setDirection(dir);
     setLightbox((lb) =>
-      lb ? { ...lb, index: (lb.index + dir + GALLERY.length) % GALLERY.length } : lb
+      lb ? { ...lb, index: (lb.index + dir + ALL_PHOTOS.length) % ALL_PHOTOS.length } : lb
     );
   };
 
@@ -219,11 +214,11 @@ export default function FrameTouches() {
 
   return (
     <>
-      {frames.map((f) => (
+      {frames.map((f, i) => (
         <button
           key={f.id}
           onPointerDown={DEBUG ? (e) => handlePointerDown(e, f.id, 'move') : undefined}
-          onClick={DEBUG ? undefined : () => handleOpen(GALLERY.indexOf(f.src))}
+          onClick={DEBUG ? undefined : () => handleOpen(i)}
           aria-label={`사진 ${f.id}`}
           className={`absolute z-20 overflow-hidden ${
             DEBUG
@@ -270,7 +265,7 @@ export default function FrameTouches() {
         <span
           className="absolute z-20 -translate-x-1/2 text-[9px] md:text-[12px] font-jua tracking-[0.15em] px-2 py-0.5 rounded-full bg-white/85 text-stone-700 shadow-sm whitespace-nowrap animate-pulse pointer-events-none"
           /* 중앙 액자(id6: x44.2 y25.5 w10.1) 오른쪽 위 모서리 근처 */
-          style={{ left: '56%', top: '22%' }}
+          style={{ left: '56%', top: '23.5%' }}
         >
           터치
         </span>
@@ -401,7 +396,7 @@ export default function FrameTouches() {
                           style={{ boxShadow: 'inset 0 0 0 1px rgba(170,156,134,0.4)' }}
                         >
                           <img
-                            src={media(GALLERY[lightbox.index])}
+                            src={media(ALL_PHOTOS[lightbox.index])}
                             alt={`웨딩 사진 ${lightbox.index + 1}`}
                             draggable={false}
                             className="block w-full max-h-[64vh] object-contain select-none bg-white"
@@ -434,21 +429,24 @@ export default function FrameTouches() {
             {lightbox.view === 'single' && (
               <div className="shrink-0 flex flex-col items-center gap-2 pb-6 pt-2">
                 <span className="font-jua text-xs tracking-[0.2em]" style={{ color: '#7A6F5E' }}>
-                  {lightbox.index + 1} / {GALLERY.length}
+                  {lightbox.index + 1} / {ALL_PHOTOS.length}
                 </span>
-                <div className="flex gap-1.5">
-                  {GALLERY.map((src, i) => (
-                    <span
-                      key={src}
-                      className="rounded-full transition-all duration-300"
-                      style={{
-                        width: i === lightbox.index ? '16px' : '6px',
-                        height: '6px',
-                        backgroundColor: i === lightbox.index ? '#8C7B63' : 'rgba(140,123,99,0.3)',
-                      }}
-                    />
-                  ))}
-                </div>
+                {/* 점 인디케이터는 사진이 많지 않을 때만 (25장이면 카운터로 충분) */}
+                {ALL_PHOTOS.length <= 12 && (
+                  <div className="flex gap-1.5">
+                    {ALL_PHOTOS.map((src, i) => (
+                      <span
+                        key={src}
+                        className="rounded-full transition-all duration-300"
+                        style={{
+                          width: i === lightbox.index ? '16px' : '6px',
+                          height: '6px',
+                          backgroundColor: i === lightbox.index ? '#8C7B63' : 'rgba(140,123,99,0.3)',
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -456,7 +454,7 @@ export default function FrameTouches() {
             {lightbox.view === 'grid' && (
               <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-8">
                 <div className="grid grid-cols-3 gap-2 md:gap-3 mx-auto max-w-[680px]">
-                  {GALLERY.map((src, i) => (
+                  {ALL_PHOTOS.map((src, i) => (
                     <button
                       key={src}
                       onClick={() => {
