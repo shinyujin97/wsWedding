@@ -45,7 +45,7 @@ const BUS = [
 function LineBadge({ label, bg, fg }: { label: string; bg: string; fg: string }) {
   return (
     <span
-      className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[14px] md:text-[15px] font-bold leading-none whitespace-nowrap"
+      className="inline-flex items-center justify-center rounded-full px-3 py-1.5 text-[13px] md:text-[15px] font-bold leading-none whitespace-nowrap"
       style={{ backgroundColor: bg, color: fg }}
     >
       {label}
@@ -200,13 +200,13 @@ export default function LocationMap() {
               <span className="text-lg md:text-xl font-bold text-stone-800">지하철</span>
             </div>
             {SUBWAY.map((item) => (
-              <div key={item.desc} className="flex items-center gap-3">
+              <div key={item.desc} className="flex items-center gap-2">
                 <span className="flex shrink-0 gap-1.5">
                   {item.lines.map((ln) => (
                     <LineBadge key={ln.name} label={ln.name} bg={ln.color} fg={ln.text} />
                   ))}
                 </span>
-                <span className="text-[15px] md:text-base text-stone-700 leading-6">{item.desc}</span>
+                <span className="text-[13px] md:text-base text-stone-700 leading-6 whitespace-nowrap">{item.desc}</span>
               </div>
             ))}
           </div>

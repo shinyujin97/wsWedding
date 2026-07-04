@@ -63,7 +63,8 @@ const ACCOUNT_GROUPS: AccountGroup[] = [
 
 export default function AccountsSection() {
   // 신랑측·신부측 각각 독립적으로 열림/닫힘 (둘 다 동시에 열릴 수 있음)
-  const [openSet, setOpenSet] = useState<Set<number>>(() => new Set([0]));
+  // 초기엔 모두 닫힘 — 사용자가 눌러야 펼쳐진다.
+  const [openSet, setOpenSet] = useState<Set<number>>(() => new Set());
 
   const toggle = (i: number) =>
     setOpenSet((prev) => {

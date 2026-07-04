@@ -52,10 +52,10 @@ export default function MainSection({ onReplay }: Props) {
         <p
           className="px-3"
           style={{
-            color: '#1F120A',
+            color: '#3A2A22',
             fontFamily: 'serif',
-            fontWeight: 700,
-            fontSize: 'clamp(1.05rem, 5.2vw, 2.25rem)',
+            fontWeight: 400,
+            fontSize: 'clamp(0.95rem, 4.4vw, 1.7rem)',
             letterSpacing: '0.1em',
             textShadow: '0 1px 6px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.6)',
           }}
@@ -65,11 +65,12 @@ export default function MainSection({ onReplay }: Props) {
         <p
           className="mt-3 px-3"
           style={{
-            color: '#160C05',
+            color: '#000000',
             fontWeight: 900,
-            fontSize: 'clamp(0.95rem, 4vw, 1.35rem)',
-            letterSpacing: '0.18em',
-            textShadow: '0 1px 6px rgba(255,255,255,0.95), 0 0 12px rgba(255,255,255,0.6)',
+            fontSize: 'clamp(0.95rem, 5vw, 1.9rem)',
+            letterSpacing: '0.04em',
+            whiteSpace: 'nowrap',
+            textShadow: '0 1px 6px rgba(255,255,255,1), 0 0 12px rgba(255,255,255,0.7)',
           }}
         >
           2026. 10. 17. SAT | 12:50 PM

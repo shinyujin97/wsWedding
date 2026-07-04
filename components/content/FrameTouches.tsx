@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { media } from '@/lib/media';
 
 // ==========================================================
@@ -182,11 +182,20 @@ export default function FrameTouches() {
     );
   };
 
-  // 스와이프(드래그) 종료 시 거리·속도로 다음/이전 판정
-  const handleDragEnd = (_e: unknown, info: PanInfo) => {
-    const threshold = 60; // px
-    if (info.offset.x < -threshold || info.velocity.x < -400) paginate(1);
-    else if (info.offset.x > threshold || info.velocity.x > 400) paginate(-1);
+  // 스와이프 감지: 손가락을 따라 늘어나지 않고, 방향만 판정해서
+  // 버튼 클릭과 동일한 슬라이드 트랜지션(paginate)을 트리거한다.
+  const touchStartX = useRef<number | null>(null);
+  const slideAreaRef = useRef<HTMLDivElement>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    const threshold = 45; // px
+    if (dx < -threshold) paginate(1);
+    else if (dx > threshold) paginate(-1);
   };
 
   // 모달 열려 있는 동안 body 스크롤 잠금 → 닫히면 복구
@@ -197,6 +206,19 @@ export default function FrameTouches() {
     return () => {
       document.body.style.overflow = prev;
     };
+  }, [lightbox]);
+
+  // 엣지-백 제스처 차단 — 비패시브 touchmove 리스너로 기본 동작(뒤로가기/주소창 토글) 취소.
+  // React onTouchMove 는 패시브라 preventDefault 가 안 먹어서 네이티브로 직접 등록한다.
+  useEffect(() => {
+    const el = slideAreaRef.current;
+    if (!el || !lightbox || lightbox.view !== 'single') return;
+    const onMove = (e: TouchEvent) => {
+      // 손가락 하나짜리 스와이프만 취소 (핀치 줌 등은 건드리지 않음)
+      if (e.touches.length === 1) e.preventDefault();
+    };
+    el.addEventListener('touchmove', onMove, { passive: false });
+    return () => el.removeEventListener('touchmove', onMove);
   }, [lightbox]);
 
   // 키보드 네비게이션 (PC 아티팩트 허용)
@@ -360,8 +382,15 @@ export default function FrameTouches() {
             {/* ----- 단일 액자 캐러셀 ----- */}
             {lightbox.view === 'single' && (
               <div className="relative flex-1 min-h-0 flex items-center justify-center overflow-hidden">
-                {/* 슬라이드 영역 */}
-                <div className="relative w-full h-full flex items-center justify-center px-6">
+                {/* 슬라이드 영역 — 스와이프 방향만 감지, 사진은 트랜지션으로만 이동.
+                    ref로 비패시브 touchmove 리스너를 붙여 엣지-백 제스처를 preventDefault 로 차단 */}
+                <div
+                  ref={slideAreaRef}
+                  className="relative w-full h-full flex items-center justify-center px-6"
+                  style={{ touchAction: 'none', overscrollBehavior: 'contain' }}
+                  onTouchStart={handleTouchStart}
+                  onTouchEnd={handleTouchEnd}
+                >
                   <AnimatePresence initial={false} custom={direction} mode="popLayout">
                     <motion.div
                       key={lightbox.index}
@@ -371,16 +400,12 @@ export default function FrameTouches() {
                       animate="center"
                       exit="exit"
                       transition={{ duration: 0.4, ease: 'easeOut' }}
-                      drag="x"
-                      dragConstraints={{ left: 0, right: 0 }}
-                      dragElastic={0.18}
-                      onDragEnd={handleDragEnd}
-                      whileDrag={{ cursor: 'grabbing' }}
-                      className="absolute flex items-center justify-center cursor-grab touch-pan-y"
-                      style={{ width: 'min(88vw, 430px)' }}
+                      className="absolute flex items-center justify-center"
+                      style={{ width: 'min(88vw, 430px)', touchAction: 'none' }}
                     >
                       {/* 깔끔한 매트 액자 — 흰 여백(패스파르투) + 얇은 키라인 + 부드러운 그림자.
-                          사진은 잘리지 않게 object-contain (세로/가로 사진 모두 자연스럽게 담김) */}
+                          액자 박스는 사진 비율과 무관하게 고정 크기 → 슬라이드 시 커졌다 줄었다 하지 않음.
+                          사진은 그 안에서 object-contain 으로 잘리지 않게 담긴다(세로/가로 모두). */}
                       <div
                         className="relative w-full select-none"
                         style={{
@@ -393,13 +418,16 @@ export default function FrameTouches() {
                       >
                         <div
                           className="relative overflow-hidden"
-                          style={{ boxShadow: 'inset 0 0 0 1px rgba(170,156,134,0.4)' }}
+                          style={{
+                            height: 'min(62svh, 500px)',
+                            boxShadow: 'inset 0 0 0 1px rgba(170,156,134,0.4)',
+                          }}
                         >
                           <img
                             src={media(ALL_PHOTOS[lightbox.index])}
                             alt={`웨딩 사진 ${lightbox.index + 1}`}
                             draggable={false}
-                            className="block w-full max-h-[64vh] object-contain select-none bg-white"
+                            className="block w-full h-full object-contain select-none bg-white"
                           />
                         </div>
                       </div>

@@ -51,6 +51,20 @@ export default function VideoIntro({ onComplete }: Props) {
         onEnded={onComplete}
         className="absolute inset-0 w-full h-full object-contain"
       />
+
+      {/* 영상 스킵하기 — 재생 중(=이 컴포넌트가 떠 있는 동안)에만 노출. 우측 상단 */}
+      <button
+        onClick={onComplete}
+        aria-label="영상 스킵하기"
+        className="absolute top-4 right-4 z-10 flex items-center gap-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white text-xs md:text-sm font-jua tracking-wide px-3.5 py-2 backdrop-blur-sm shadow-md transition-colors"
+        style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))' }}
+      >
+        영상 스킵하기
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M5 4l10 8-10 8V4z" />
+          <line x1="19" y1="5" x2="19" y2="19" />
+        </svg>
+      </button>
     </div>
   );
 }
