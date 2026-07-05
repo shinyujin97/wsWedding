@@ -14,7 +14,7 @@ export const WEDDING_LABEL = {
   dateKo: '2026년 10월 17일 토요일',
   timeKo: '오후 12시 50분',
   venue: '아르베웨딩',
-  venueDetail: 'SK리더스뷰 1F',
+  venueDetail: '',
   address: '서울 강남구 봉은사로 302',
 } as const;
 

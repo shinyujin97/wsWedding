@@ -49,14 +49,15 @@ const ACCOUNT_GROUPS: AccountGroup[] = [
   {
     side: '신랑측',
     accounts: [
-      { role: '신랑', name: '신우진', bank: '신한', number: '110-386-342220' },
+      { role: '신랑', name: '신우진', bank: '신한은행', number: '110-386-342220' },
+      { role: '신랑 아버지', name: '신상영', bank: '기업은행', number: '11231321321' },
     ],
   },
   {
     side: '신부측',
     accounts: [
       { role: '신부', name: '박선영', bank: '카카오뱅크', number: '3333-11-8073403' },
-      { role: '신부 아버님', name: '박경선', bank: '우리', number: '500-017125-12-001' },
+      { role: '신부 아버지', name: '박경선', bank: '우리은행', number: '500-017125-12-001' },
     ],
   },
 ];
@@ -163,8 +164,13 @@ export default function AccountsSection() {
                           <button
                             type="button"
                             onClick={() => handleCopy(acc.number)}
-                            className="shrink-0 px-3 py-1.5 rounded-full bg-stone-100 border border-stone-200 text-xs text-stone-600 active:scale-[0.98] transition-transform"
+                            aria-label={`${acc.role} 계좌번호 복사`}
+                            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-[#d6c09a]/70 bg-[#fbf7ef] px-3.5 text-[11px] font-medium tracking-[0.12em] text-[#8a6a37] shadow-[0_8px_18px_rgba(194,160,108,0.14)] active:scale-[0.98] transition-transform"
                           >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                              <rect x="9" y="9" width="13" height="13" rx="2" />
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
                             복사
                           </button>
                         </div>

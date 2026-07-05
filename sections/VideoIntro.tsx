@@ -3,7 +3,7 @@ import { useRef, useEffect } from 'react';
 import { media } from '@/lib/media';
 
 // 단일 통합 영상(묘목 심기 → 나무 성장 → 사계절 → 웨딩 피날레) 재생.
-const INTRO_VIDEO = media('/video/main.mp4');
+const INTRO_VIDEO = '/video/main.mp4';
 
 interface Props {
   onComplete: () => void;

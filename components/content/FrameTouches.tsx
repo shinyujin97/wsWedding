@@ -22,15 +22,11 @@ const INITIAL_FRAMES = [
 
 type Frame = { id: number; x: number; y: number; w: number; h?: number; src: string };
 
-// 액자 대표 사진 5장 (좌→우)
-const FRAME_PHOTOS = INITIAL_FRAMES.map((f) => f.src);
-
 // 일반 갤러리 사진 20장
 const GALLERY = Array.from({ length: 20 }, (_, i) => `/weddingImages/1-${i + 1}.jpg`);
 
-// 라이트박스/그리드가 쓰는 전체 사진(25장): 액자 대표 5장 → 갤러리 20장 순서.
-// 액자를 터치하면 해당 사진(앞쪽 5장 중 하나)부터 시작해 전체를 넘겨볼 수 있다.
-const ALL_PHOTOS = [...FRAME_PHOTOS, ...GALLERY];
+// 라이트박스/그리드가 쓰는 전체 사진(20장): 액자 대표 5장은 갤러리와 중복이라 제외.
+const ALL_PHOTOS = GALLERY;
 
 // 라이트박스 상태: null = 닫힘. view = 'single'(캐러셀) | 'grid'(전체 사진 보기)
 type Lightbox = { index: number; view: 'single' | 'grid' };
@@ -163,7 +159,7 @@ export default function FrameTouches() {
   };
 
   // ==========================================================
-  // 라이트박스 열기 — 탭한 사진(ALL_PHOTOS 인덱스)부터 전체 캐러셀로 표시
+  // 라이트박스 열기 — 탭한 액자와 같은 순서의 갤러리 사진부터 전체 캐러셀로 표시
   // ==========================================================
   const handleOpen = (index: number) => {
     if (DEBUG) return; // DEBUG 모드에서는 비활성
@@ -459,7 +455,7 @@ export default function FrameTouches() {
                 <span className="font-jua text-xs tracking-[0.2em]" style={{ color: '#7A6F5E' }}>
                   {lightbox.index + 1} / {ALL_PHOTOS.length}
                 </span>
-                {/* 점 인디케이터는 사진이 많지 않을 때만 (25장이면 카운터로 충분) */}
+                {/* 점 인디케이터는 사진이 많지 않을 때만 */}
                 {ALL_PHOTOS.length <= 12 && (
                   <div className="flex gap-1.5">
                     {ALL_PHOTOS.map((src, i) => (

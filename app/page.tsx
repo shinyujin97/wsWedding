@@ -17,7 +17,8 @@ export default function Home() {
   const [videosDone, setVideosDone] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const seen = typeof window !== 'undefined' && localStorage.getItem(SEEN_KEY) === '1';
+    let seen = false;
+    try { seen = window.localStorage?.getItem(SEEN_KEY) === '1'; } catch {}
     setVideosDone(seen);
   }, []);
 

@@ -44,7 +44,8 @@ next-env.d.ts
 .vercel
 
 # private media (사진/영상/음악 — public repo 제외)
-/public/video/
+/public/video/*
+!/public/video/main.mp4
 /public/weddingImages/
 /public/music/
 /public/Thumbnail.jpg

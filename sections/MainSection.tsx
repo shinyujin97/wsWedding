@@ -42,39 +42,24 @@ export default function MainSection({ onReplay }: Props) {
         </button>
       )}
 
-      {/* 상단 텍스트 */}
+      {/* 상단 이미지 문구 */}
       <motion.div
-        className="absolute top-[4%] left-0 right-0 text-center z-10"
+        className="absolute top-[2%] left-0 right-0 z-10 flex justify-center px-5"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.3 }}
       >
-        <p
-          className="px-3"
-          style={{
-            color: '#3A2A22',
-            fontFamily: 'serif',
-            fontWeight: 400,
-            fontSize: 'clamp(0.95rem, 4.4vw, 1.7rem)',
-            letterSpacing: '0.1em',
-            textShadow: '0 1px 6px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.6)',
-          }}
-        >
-          우리, 결혼합니다
-        </p>
-        <p
-          className="mt-3 px-3"
-          style={{
-            color: '#000000',
-            fontWeight: 900,
-            fontSize: 'clamp(0.95rem, 5vw, 1.9rem)',
-            letterSpacing: '0.04em',
-            whiteSpace: 'nowrap',
-            textShadow: '0 1px 6px rgba(255,255,255,1), 0 0 12px rgba(255,255,255,0.7)',
-          }}
-        >
-          2026. 10. 17. SAT | 12:50 PM
-        </p>
+        <img
+          src="/text_watercolor_gray_wash.png?v=3"
+          alt=""
+          aria-hidden
+          className="absolute top-1/2 left-1/2 w-[70%] max-w-[340px] md:max-w-[410px] h-auto -translate-x-1/2 -translate-y-[48%] opacity-90"
+        />
+        <img
+          src="/were_getting_married_white_cutout_black_outline.png"
+          alt="We're getting married"
+          className="relative w-[74%] max-w-[360px] md:max-w-[430px] h-auto drop-shadow-[0_2px_8px_rgba(92,64,42,0.18)]"
+        />
       </motion.div>
 
       {/* 하단 텍스트 */}
@@ -95,17 +80,6 @@ export default function MainSection({ onReplay }: Props) {
           }}
         >
           우진 &amp; 선영
-        </p>
-        <p
-          className="mt-2 px-3"
-          style={{
-            color: '#4A2E1F',
-            fontSize: 'clamp(0.6rem, 2.5vw, 0.875rem)',
-            letterSpacing: '0.12em',
-            textShadow: '0 1px 5px rgba(255,255,255,0.85)',
-          }}
-        >
-          VENUE: 더 그레이스 웨딩홀
         </p>
       </motion.div>
     </section>

@@ -16,9 +16,12 @@ const TABS: Tab[] = [
     key: 'photo',
     label: '포토부스',
     lines: [
-      '1층에서 지하로 내려가는 계단 뒤편에',
-      '포토부스가 준비되어 있습니다.',
-      '많이 많이 찍어주세요~!',
+      '포토부스는 1층에서 지하로 내려가는',
+      '계단 뒤편에 마련되어 있습니다.',
+      '편하게 이용해 주시고,',
+      '한 장은 방명록에 남겨 주시면',
+      '감사히 간직하겠습니다.',
+      '또 한 장은 소중한 추억으로 간직해 주세요.',
     ],
   },
   {
@@ -27,6 +30,15 @@ const TABS: Tab[] = [
     lines: [
       '식사는 오후 12시 20분부터',
       '지하 1층 연회장에서 이용하실 수 있습니다.',
+    ],
+  },
+  {
+    key: 'flower',
+    label: '화환 안내',
+    lines: [
+      '예식장 사정상 화환 반입이 어려워,',
+      '축하의 마음만 감사히 받겠습니다.',
+      '너른 양해 부탁드립니다.',
     ],
   },
 ];
@@ -63,7 +75,17 @@ function AnimatedBlock({ children, index }: { children: React.ReactNode; index: 
 
 export default function NoticeSection() {
   const [active, setActive] = useState(0);
+  const touchStartX = useRef<number | null>(null);
   const tab = TABS[active];
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartX.current === null) return;
+
+    const delta = event.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+
+    if (Math.abs(delta) < 40) return;
+    setActive((current) => (delta < 0 ? Math.min(current + 1, TABS.length - 1) : Math.max(current - 1, 0)));
+  };
 
   return (
     <section className="px-6 md:px-12 py-12 md:py-16 bg-[#FDFAF5]">
@@ -86,7 +108,16 @@ export default function NoticeSection() {
 
       {/* 탭 */}
       <AnimatedBlock index={1}>
-        <div className="max-w-md mx-auto">
+        <div
+          className="max-w-md mx-auto"
+          onTouchStart={(event) => {
+            touchStartX.current = event.touches[0].clientX;
+          }}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={() => {
+            touchStartX.current = null;
+          }}
+        >
           <div className="flex border-b border-stone-200">
             {TABS.map((t, i) => {
               const isActive = i === active;

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 
 declare global {
@@ -55,6 +55,7 @@ function LineBadge({ label, bg, fg }: { label: string; bg: string; fg: string })
 
 export default function LocationMap() {
   const mapRef = useRef<HTMLDivElement>(null);
+  const [isParkingMapOpen, setParkingMapOpen] = useState(false);
 
   // SDK 준비 여부를 직접 폴링해 "마운트될 때마다" 확실히 초기화한다.
   // (next/script의 onLoad는 스크립트가 새로 로드될 때만 불려서, 캐시/재마운트 시
@@ -112,7 +113,23 @@ export default function LocationMap() {
         strategy="afterInteractive"
       />
       <section className="px-6 md:px-12 py-12 md:py-16 bg-[#FDFAF5]">
-        <p className="text-xs md:text-sm tracking-widest text-stone-500 text-center mb-6 md:mb-8 uppercase">Location</p>
+        <p className="text-xs md:text-sm tracking-widest text-stone-500 text-center mb-6 md:mb-8">오시는 길</p>
+
+        <div className="space-y-2 pb-6 text-center text-stone-700">
+          <p className="text-base md:text-lg text-stone-800 font-medium" style={{ fontFamily: 'serif' }}>
+            아르베웨딩
+          </p>
+          <p className="text-sm text-stone-700">서울 강남구 봉은사로 302</p>
+          <button
+            type="button"
+            onClick={handleCopyAddress}
+            aria-label="주소 복사하기"
+            className="inline-flex items-center justify-center text-xs font-medium text-stone-500 underline underline-offset-4 active:scale-[0.98] transition-transform"
+          >
+            복사하기
+          </button>
+        </div>
+
         <div
           ref={mapRef}
           className="w-full h-64 md:h-96 rounded-2xl overflow-hidden mx-auto"
@@ -121,70 +138,63 @@ export default function LocationMap() {
         {/* 오시는 길 */}
         <div className="mt-8 md:mt-10 divide-y divide-dashed divide-stone-200/70 text-stone-700">
 
-          {/* 그룹1 — 예식장 */}
+          {/* 그룹1 — 주차 */}
           <div className="space-y-2 py-6 first:pt-0">
-            <div className="flex items-center gap-2 mb-1">
-              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#44403c" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10Z" />
-                <circle cx="12" cy="11" r="2.2" />
-              </svg>
-              <span className="text-lg md:text-xl font-bold text-stone-800">예식장</span>
-            </div>
-            <p className="text-base md:text-lg text-stone-800 font-medium" style={{ fontFamily: 'serif' }}>
-              아르베웨딩
-            </p>
-            <p className="text-sm text-stone-700">서울 강남구 봉은사로 302</p>
-            <a href="tel:025647031" className="text-sm text-stone-700 inline-block underline-offset-2">02-564-7031</a>
-            <div>
-              <button
-                onClick={handleCopyAddress}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-stone-100 border border-stone-200 text-xs text-stone-600 active:scale-[0.98] transition-transform"
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            <div className="flex items-center justify-between gap-3 mb-1">
+              <div className="flex items-center gap-2">
+                <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#44403c" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M10 16.5V7.5h3.2a2.7 2.7 0 0 1 0 5.4H10" />
                 </svg>
-                주소 복사
+                <span className="text-lg md:text-xl font-bold text-stone-800">주차</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setParkingMapOpen(true)}
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-stone-200 bg-white/75 px-3 text-xs font-medium text-stone-600 shadow-sm active:scale-[0.98] transition-transform"
+              >
+                약도보기
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M7 17L17 7" />
+                  <path d="M8 7h9v9" />
+                </svg>
               </button>
             </div>
-          </div>
-
-          {/* 그룹2 — 주차 */}
-          <div className="space-y-2 py-6">
-            <div className="flex items-center gap-2 mb-1">
-              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#44403c" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <circle cx="12" cy="12" r="9" />
-                <path d="M10 16.5V7.5h3.2a2.7 2.7 0 0 1 0 5.4H10" />
-              </svg>
-              <span className="text-lg md:text-xl font-bold text-stone-800">주차</span>
-            </div>
-            <p className="text-sm text-stone-700 font-medium">네비게이션 주차장 주소</p>
             <p className="text-sm text-stone-700">서울시 강남구 논현동 237-12</p>
             <div className="grid grid-cols-3 gap-2 pt-1">
               <a
                 href={`https://map.naver.com/p/search/${PARKING_QUERY}`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex flex-col items-center py-3 rounded-xl bg-stone-100 border border-stone-200 text-xs text-stone-600 active:scale-[0.98] transition-transform"
+                className="flex min-h-12 items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-white/75 px-2 py-2 text-[11px] font-semibold text-stone-700 shadow-sm active:scale-[0.98] transition-transform"
               >
-                네이버지도
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-stone-200/70">
+                  <img src="/navigation-icons/naver-map.jpeg" alt="" aria-hidden className="h-full w-full object-cover" />
+                </span>
+                <span className="whitespace-nowrap">네이버지도</span>
               </a>
               <a
                 href={`https://map.kakao.com/?q=${PARKING_QUERY}`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex flex-col items-center py-3 rounded-xl bg-stone-100 border border-stone-200 text-xs text-stone-600 active:scale-[0.98] transition-transform"
+                className="flex min-h-12 items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-white/75 px-2 py-2 text-[11px] font-semibold text-stone-700 shadow-sm active:scale-[0.98] transition-transform"
               >
-                카카오내비
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-stone-200/70">
+                  <img src="/navigation-icons/kakao-navi.png" alt="" aria-hidden className="h-full w-full object-cover" />
+                </span>
+                <span className="whitespace-nowrap">카카오내비</span>
               </a>
               <a
                 href={`tmap://search?name=${PARKING_QUERY}`}
-                className="flex flex-col items-center py-3 rounded-xl bg-stone-100 border border-stone-200 text-xs text-stone-600 active:scale-[0.98] transition-transform"
+                className="flex min-h-12 items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-white/75 px-2 py-2 text-[11px] font-semibold text-stone-700 shadow-sm active:scale-[0.98] transition-transform"
               >
-                T맵
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-stone-200/70">
+                  <img src="/navigation-icons/tmap.jpeg" alt="" aria-hidden className="h-full w-full object-cover" />
+                </span>
+                <span className="whitespace-nowrap">T맵</span>
               </a>
             </div>
-            <p className="text-sm text-stone-800 font-medium mt-2 text-center">주차는 2시간 무료입니다.</p>
+            <p className="text-sm text-stone-800 font-medium mt-4 text-center">주차는 2시간 무료입니다.</p>
           </div>
 
           {/* 그룹3 — 지하철 (호선 컬러 배지) */}
@@ -243,6 +253,35 @@ export default function LocationMap() {
 
         </div>
       </section>
+      {isParkingMapOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/55 px-4 py-8"
+          role="dialog"
+          aria-modal="true"
+          aria-label="아르베웨딩 약도"
+        >
+          <button
+            type="button"
+            className="absolute inset-0 cursor-default"
+            aria-label="약도 닫기"
+            onClick={() => setParkingMapOpen(false)}
+          />
+          <div className="relative z-10 max-h-full w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <button
+              type="button"
+              aria-label="약도 닫기"
+              onClick={() => setParkingMapOpen(false)}
+              className="absolute right-3 top-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-stone-600 shadow-sm active:scale-[0.96] transition-transform"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                <path d="M18 6L6 18" />
+                <path d="M6 6l12 12" />
+              </svg>
+            </button>
+            <img src="/arve_map.jpeg" alt="아르베웨딩 약도" className="max-h-[82vh] w-full object-contain" />
+          </div>
+        </div>
+      )}
     </>
   );
 }

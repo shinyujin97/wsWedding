@@ -58,7 +58,7 @@ export default function InfoSection() {
     >
       {/* 상단 다이아몬드 장식 */}
       <AnimatedBlock index={0}>
-        <div className="flex items-center justify-center gap-4 mb-12 pt-4">
+        <div className="flex items-center justify-center gap-4 pt-4">
           <div className="h-px w-12 bg-stone-300/50" />
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.4"/>
@@ -67,25 +67,52 @@ export default function InfoSection() {
         </div>
       </AnimatedBlock>
 
-      {/* 인사말 */}
+      {/* 장소 + 날짜 */}
       <AnimatedBlock index={1}>
+        <div className="mx-auto max-w-[420px] md:max-w-[560px] py-6 text-center">
+          <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+            <div>
+              <p className="text-base md:text-lg font-medium tracking-wide text-stone-700 whitespace-nowrap" style={{ fontFamily: 'serif' }}>
+                2026년 10월 17일 토요일
+              </p>
+              <p className="mt-1 text-xs md:text-sm text-stone-500">오후 12시 50분</p>
+            </div>
+            <div>
+              <p className="text-base md:text-lg font-medium tracking-wide text-stone-700" style={{ fontFamily: 'serif' }}>
+                아르베웨딩
+              </p>
+              <p className="mt-1 text-xs md:text-sm text-stone-600">서울 강남구 봉은사로 302</p>
+            </div>
+          </div>
+        </div>
+      </AnimatedBlock>
+
+      {/* 인사말 */}
+      <AnimatedBlock index={2}>
         <div className="text-center space-y-3 mb-14">
-          <p className="text-[10px] md:text-xs tracking-[0.4em] text-stone-400 mb-5 uppercase">Invitation</p>
+          <div className="flex items-center justify-center gap-4 mb-20">
+            <div className="h-px w-12 bg-stone-300/50" />
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.4"/>
+            </svg>
+            <div className="h-px w-12 bg-stone-300/50" />
+          </div>
+          <p className="text-[10px] md:text-xs tracking-[0.4em] text-stone-400 mb-5 uppercase">초대합니다</p>
           <p className="text-sm md:text-base leading-8 md:leading-9 text-stone-600 font-light" style={{ fontFamily: 'serif' }}>
-            서로 다른 길을 걸어온 두 사람이
+            새로운 마음으로 설레는 10월,
             <br />
-            이제 같은 길을 함께 걸어가려 합니다.
+            오랜 사랑을 더 깊은 약속으로 이어가려 합니다.
           </p>
           <p className="text-sm md:text-base leading-8 md:leading-9 text-stone-600 font-light mt-4" style={{ fontFamily: 'serif' }}>
             저희의 새로운 시작을
             <br />
-            축복해 주시면 감사하겠습니다.
+            따뜻한 축복으로 함께해 주세요.
           </p>
         </div>
       </AnimatedBlock>
 
       {/* 신랑 & 신부 */}
-      <AnimatedBlock index={2}>
+      <AnimatedBlock index={3}>
         <div className="text-center space-y-3 mb-14">
           <div className="flex items-center justify-center gap-6">
             <div className="text-right">
@@ -109,22 +136,11 @@ export default function InfoSection() {
         </div>
       </AnimatedBlock>
 
-      {/* 날짜 */}
-      <AnimatedBlock index={3}>
-        <div className="text-center mb-10">
-          <p className="text-[10px] md:text-xs tracking-[0.4em] text-stone-400 mb-3 uppercase">Date</p>
-          <p className="text-lg md:text-2xl font-medium text-stone-700 tracking-wide" style={{ fontFamily: 'serif' }}>
-            2026년 10월 17일 토요일
-          </p>
-          <p className="text-sm md:text-base text-stone-400 mt-1">오후 12시 50분</p>
-        </div>
-      </AnimatedBlock>
-
       {/* 캘린더 */}
       <AnimatedBlock index={4}>
         <div className="mb-14">
-          <p className="text-[11px] md:text-xs tracking-[0.3em] text-stone-400 text-center mb-6 uppercase">
-            October 2026
+          <p className="text-[16px] md:text-xs tracking-[0.3em] text-stone-400 text-center mb-6 uppercase">
+            2026 10월
           </p>
           <div className="grid grid-cols-7 gap-x-1 gap-y-1 md:gap-y-1.5 text-center max-w-[360px] md:max-w-[500px] mx-auto">
             {['일', '월', '화', '수', '목', '금', '토'].map((d) => (
@@ -197,17 +213,6 @@ export default function InfoSection() {
       <AnimatedBlock index={5}>
         <div className="mb-16">
           <WeddingCountdown />
-        </div>
-      </AnimatedBlock>
-
-      {/* 장소 */}
-      <AnimatedBlock index={6}>
-        <div className="text-center">
-          <p className="text-lg md:text-2xl font-medium text-stone-700 tracking-wide" style={{ fontFamily: 'serif' }}>
-            아르베웨딩
-          </p>
-          <p className="text-sm md:text-base text-stone-700 mt-1.5">서울 강남구 봉은사로 302</p>
-          <p className="text-xs md:text-sm text-stone-600 mt-1">SK리더스뷰 1F</p>
         </div>
       </AnimatedBlock>
     </motion.section>

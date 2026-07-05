@@ -18,16 +18,17 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 function Cell({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex flex-col items-center">
-      <div className="w-[58px] md:w-[68px] py-3 md:py-3.5 rounded-2xl bg-white/70 border border-stone-200 shadow-sm">
+    <div className="flex min-w-[56px] md:min-w-[68px] flex-col items-center">
+      <div className="relative w-[56px] md:w-[68px] overflow-hidden rounded-lg border border-[#d8bf8f]/60 bg-gradient-to-b from-white/90 to-[#f7efe2]/80 py-3 md:py-3.5 shadow-[0_12px_26px_-18px_rgba(70,52,28,0.55)]">
+        <span className="absolute inset-x-3 top-1 h-px bg-gradient-to-r from-transparent via-[#c2a06c]/50 to-transparent" />
         <span
-          className="block text-2xl md:text-3xl font-medium text-stone-700 tabular-nums leading-none"
+          className="block text-2xl md:text-3xl font-semibold text-[#5b4730] tabular-nums leading-none"
           style={{ fontFamily: 'serif' }}
         >
           {pad(value)}
         </span>
       </div>
-      <span className="mt-2 text-[10px] md:text-xs tracking-[0.15em] text-stone-400 uppercase">{label}</span>
+      <span className="mt-2 text-[9px] md:text-[10px] tracking-[0.2em] text-[#9a7a47] uppercase">{label}</span>
     </div>
   );
 }
@@ -50,25 +51,39 @@ export default function WeddingCountdown() {
   return (
     <div className="text-center" style={{ visibility: ready ? 'visible' : 'hidden' }}>
       {/* 1) 결혼식까지 실시간 카운트다운 — 캘린더 바로 아래 */}
-      <div>
-        <p className="text-xs md:text-sm text-stone-500 mb-4" style={{ fontFamily: 'serif' }}>
+      <div className="mx-auto max-w-[390px] rounded-lg border border-[#d8bf8f]/45 bg-white/45 px-3.5 py-6 shadow-[0_18px_42px_-30px_rgba(70,52,28,0.55)]">
+        <div className="mb-4 flex items-center justify-center gap-3">
+          <div className="h-px w-9 bg-gradient-to-r from-transparent to-[#c2a06c]/45" />
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden>
+            <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.55" />
+          </svg>
+          <div className="h-px w-9 bg-gradient-to-l from-transparent to-[#c2a06c]/45" />
+        </div>
+        <p className="mb-1 text-[10px] tracking-[0.32em] text-[#a48655] uppercase">Wedding Day</p>
+        <p className="text-sm md:text-base text-stone-600 mb-5" style={{ fontFamily: 'serif' }}>
           결혼식까지 남은 시간
         </p>
-        <div className="flex items-start justify-center gap-2 md:gap-3">
+        <div className="flex items-start justify-center gap-1.5 md:gap-2.5">
           <Cell value={left.days} label="Days" />
-          <span className="text-2xl md:text-3xl text-stone-300 leading-none mt-2.5">:</span>
+          <span className="text-xl md:text-2xl text-[#c2a06c]/45 leading-none mt-3">:</span>
           <Cell value={left.hours} label="Hour" />
-          <span className="text-2xl md:text-3xl text-stone-300 leading-none mt-2.5">:</span>
+          <span className="text-xl md:text-2xl text-[#c2a06c]/45 leading-none mt-3">:</span>
           <Cell value={left.minutes} label="Min" />
-          <span className="text-2xl md:text-3xl text-stone-300 leading-none mt-2.5">:</span>
+          <span className="text-xl md:text-2xl text-[#c2a06c]/45 leading-none mt-3">:</span>
           <Cell value={left.seconds} label="Sec" />
         </div>
       </div>
 
-      {/* 2) 함께한 지 — 아치 창문(양쪽 셔터 열림) + 추억 사진 */}
+      {/* 2) 함께한 지 — 사진과 Our Days를 하나의 아치 프레임으로 묶음 */}
       <div className="mt-16 flex flex-col items-center">
-        {/* 아치 프레임 */}
-        <div className="relative" style={{ maxWidth: 'min(68%, 264px)', width: '100%' }}>
+        <div
+          className="relative overflow-hidden bg-white/45 shadow-[0_22px_46px_-22px_rgba(60,48,32,0.45)]"
+          style={{
+            maxWidth: 'min(78%, 320px)',
+            width: '100%',
+            borderRadius: '50% 50% 18px 18px / 28% 28% 7% 7%',
+          }}
+        >
           {/* 아치 꼭대기 다이아몬드 */}
           <svg
             width="14"
@@ -81,17 +96,30 @@ export default function WeddingCountdown() {
             <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.55" />
           </svg>
 
-          {/* 사진 (아치) */}
-          <div
-            className="overflow-hidden bg-stone-100 shadow-[0_18px_38px_-18px_rgba(60,48,32,0.4)]"
-            style={{ borderRadius: '50% 50% 10px 10px / 32% 32% 6px 6px' }}
-          >
-            <img
-              src={media('/images/frames/image.png')}
-              alt="우리의 추억"
-              draggable={false}
-              className="block w-full h-auto select-none"
-            />
+          <img
+            src={media('/images/frames/image.png')}
+            alt="우리의 추억"
+            draggable={false}
+            className="block w-full h-auto select-none"
+          />
+
+          <div className="relative px-4 pt-5 pb-5 bg-[#FDFAF5]/82">
+            <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-[#c2a06c]/50 to-transparent" />
+            <p className="text-[10px] md:text-xs tracking-[0.35em] text-stone-400 uppercase mb-3">Our Days</p>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden>
+                <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.55" />
+              </svg>
+              <span className="text-sm md:text-base text-stone-500" style={{ fontFamily: 'serif' }}>
+                우리가 함께한 시간
+              </span>
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden>
+                <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.55" />
+              </svg>
+            </div>
+            <p className="text-[13px] md:text-base font-bold text-stone-700 tabular-nums tracking-wide whitespace-nowrap" style={{ fontFamily: 'serif' }}>
+              &ldquo;{e.years}년 {e.months}개월 {e.days}일 {e.hours}시간 {e.minutes}분 {e.seconds}초&rdquo;
+            </p>
           </div>
 
           {/* 골드 키라인 (아치 윤곽) */}
@@ -99,37 +127,11 @@ export default function WeddingCountdown() {
             aria-hidden
             className="absolute inset-0 pointer-events-none"
             style={{
-              borderRadius: '50% 50% 10px 10px / 32% 32% 6px 6px',
+              borderRadius: '50% 50% 18px 18px / 28% 28% 7% 7%',
               boxShadow: 'inset 0 0 0 1px rgba(194,160,108,0.75)',
             }}
           />
         </div>
-
-        {/* 다이아몬드 디바이더 */}
-        <div className="flex items-center justify-center gap-3 mt-9 mb-5">
-          <div className="h-px w-10 bg-stone-300/60" />
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden>
-            <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.45" />
-          </svg>
-          <div className="h-px w-10 bg-stone-300/60" />
-        </div>
-
-        {/* 라벨 + 카운터 */}
-        <p className="text-[10px] md:text-xs tracking-[0.35em] text-stone-400 uppercase mb-3">Our Days</p>
-        <div className="flex items-center justify-center gap-2.5 mb-3">
-          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden>
-            <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.6" />
-          </svg>
-          <span className="text-sm md:text-base text-stone-500" style={{ fontFamily: 'serif' }}>
-            우리가 함께한 시간
-          </span>
-          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden>
-            <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.6" />
-          </svg>
-        </div>
-        <p className="text-[15px] md:text-lg font-bold text-stone-700 tabular-nums tracking-wide" style={{ fontFamily: 'serif' }}>
-          &ldquo;{e.years}년 {e.months}개월 {e.days}일 {e.hours}시간 {e.minutes}분 {e.seconds}초&rdquo;
-        </p>
       </div>
     </div>
   );
