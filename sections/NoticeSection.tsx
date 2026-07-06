@@ -156,9 +156,6 @@ export default function NoticeSection() {
                 transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
                 className="text-center"
               >
-                <p className="text-sm md:text-base text-stone-700 font-medium mb-4" style={{ fontFamily: 'serif' }}>
-                  {tab.label}
-                </p>
                 <div className="space-y-1.5">
                   {tab.lines.map((line) => (
                     <p key={line} className="text-sm text-stone-800 leading-7 font-normal">

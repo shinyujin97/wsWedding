@@ -22,8 +22,10 @@ const INITIAL_FRAMES = [
 
 type Frame = { id: number; x: number; y: number; w: number; h?: number; src: string };
 
-// 일반 갤러리 사진 20장
-const GALLERY = Array.from({ length: 20 }, (_, i) => `/weddingImages/1-${i + 1}.jpg`);
+// 일반 갤러리 사진 20장. 앞 5장은 좌→우 액자 클릭 순서와 맞춘다.
+const GALLERY_ORDER = [6, 8, 9, 13, 4, 2, 1, 20, 5, 11, 19, 3, 18, 14, 7, 16, 15, 17, 12, 10];
+const GALLERY = GALLERY_ORDER.map((n) => (n === 10 ? '/editedImages/1-10-tie-slim.jpg' : `/weddingImages/1-${n}.jpg`));
+const photoSrc = (src: string) => (src.startsWith('/editedImages/') ? src : media(src));
 
 // 라이트박스/그리드가 쓰는 전체 사진(20장): 액자 대표 5장은 갤러리와 중복이라 제외.
 const ALL_PHOTOS = GALLERY;
@@ -420,7 +422,7 @@ export default function FrameTouches() {
                           }}
                         >
                           <img
-                            src={media(ALL_PHOTOS[lightbox.index])}
+                            src={photoSrc(ALL_PHOTOS[lightbox.index])}
                             alt={`웨딩 사진 ${lightbox.index + 1}`}
                             draggable={false}
                             className="block w-full h-full object-contain select-none bg-white"
@@ -490,7 +492,7 @@ export default function FrameTouches() {
                       aria-label={`사진 ${i + 1} 보기`}
                     >
                       <img
-                        src={media(src)}
+                        src={photoSrc(src)}
                         alt={`웨딩 사진 ${i + 1}`}
                         draggable={false}
                         className="absolute inset-0 w-full h-full object-cover select-none transition-transform duration-300 group-hover:scale-105"

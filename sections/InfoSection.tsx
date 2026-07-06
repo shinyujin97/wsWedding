@@ -23,6 +23,8 @@ const fadeUpVariants = {
   }),
 };
 
+const OCTOBER_2026_HOLIDAYS = new Set([3, 5, 9]);
+
 function AnimatedBlock({ children, index }: { children: React.ReactNode; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-10% 0px' });
@@ -75,13 +77,13 @@ export default function InfoSection() {
               <p className="text-base md:text-lg font-medium tracking-wide text-stone-700 whitespace-nowrap" style={{ fontFamily: 'serif' }}>
                 2026년 10월 17일 토요일
               </p>
-              <p className="mt-1 text-xs md:text-sm text-stone-500">오후 12시 50분</p>
+              <p className="text-base md:text-lg font-medium tracking-wide text-stone-700">오후 12시 50분</p>
             </div>
             <div>
               <p className="text-base md:text-lg font-medium tracking-wide text-stone-700" style={{ fontFamily: 'serif' }}>
                 아르베웨딩
               </p>
-              <p className="mt-1 text-xs md:text-sm text-stone-600">서울 강남구 봉은사로 302</p>
+              {/* <p className="mt-1 text-[11px] text-stone-600">서울 강남구 봉은사로 302</p> */}
             </div>
           </div>
         </div>
@@ -97,7 +99,7 @@ export default function InfoSection() {
             </svg>
             <div className="h-px w-12 bg-stone-300/50" />
           </div>
-          <p className="text-[10px] md:text-xs tracking-[0.4em] text-stone-400 mb-5 uppercase">초대합니다</p>
+          <p className="text-[13px] md:text-xs tracking-[0.4em] text-stone-400 mb-5 uppercase">초대합니다</p>
           <p className="text-sm md:text-base leading-8 md:leading-9 text-stone-600 font-light" style={{ fontFamily: 'serif' }}>
             새로운 마음으로 설레는 10월,
             <br />
@@ -113,7 +115,7 @@ export default function InfoSection() {
 
       {/* 신랑 & 신부 */}
       <AnimatedBlock index={3}>
-        <div className="text-center space-y-3 mb-14">
+        <div className="text-center space-y-3 mb-20">
           <div className="flex items-center justify-center gap-6">
             <div className="text-right">
               <p className="text-xs md:text-sm text-stone-400">
@@ -163,6 +165,7 @@ export default function InfoSection() {
               const isWeddingDay = day === 17;
               const isSunday = col === 0;
               const isSaturday = col === 6;
+              const isHoliday = OCTOBER_2026_HOLIDAYS.has(day);
 
               return (
                 <div key={day} className="flex flex-col items-center text-sm md:text-lg">
@@ -189,7 +192,7 @@ export default function InfoSection() {
                     ) : (
                       <span
                         className={
-                          isSunday ? 'text-rose-300' : isSaturday ? 'text-blue-300' : 'text-stone-500'
+                          isSunday || isHoliday ? 'text-rose-400' : isSaturday ? 'text-blue-300' : 'text-stone-500'
                         }
                       >
                         {day}

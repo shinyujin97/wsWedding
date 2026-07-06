@@ -124,8 +124,12 @@ export default function LocationMap() {
             type="button"
             onClick={handleCopyAddress}
             aria-label="주소 복사하기"
-            className="inline-flex items-center justify-center text-xs font-medium text-stone-500 underline underline-offset-4 active:scale-[0.98] transition-transform"
+            className="mt-2 inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-[#d6c09a]/70 bg-white/75 px-4 text-[11px] font-medium tracking-[0.12em] text-[#8a6a37] shadow-[0_8px_18px_rgba(194,160,108,0.14)] active:scale-[0.98] transition-transform"
           >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <rect x="9" y="9" width="13" height="13" rx="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
             복사하기
           </button>
         </div>
