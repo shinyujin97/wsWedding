@@ -47,12 +47,12 @@ export const metadata: Metadata = {
   // 배포 URL — 배포 후 실제 도메인으로 교체 (Vercel 기본은 *.vercel.app)
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   title: '신우진 ♥ 박선영 결혼합니다',
-  description: '2026년 9월 20일 일요일 오후 2시 · 더 그레이스 웨딩홀',
+  description: '2026년 10월 17일 토요일 오후 12시 50분 · 아르베웨딩',
   // 개인정보(실명·장소)가 평문 노출되므로 검색엔진 인덱싱 차단
   robots: { index: false, follow: false },
   openGraph: {
     title: '신우진 ♥ 박선영 결혼합니다',
-    description: '2026년 9월 20일 일요일 오후 2시 · 더 그레이스 웨딩홀',
+    description: '2026년 10월 17일 토요일 오후 12시 50분 · 아르베웨딩',
     images: [{
       url: THUMBNAIL_URL,
       width: 1023,
