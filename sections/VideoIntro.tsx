@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { media } from '@/lib/media';
 
 // 단일 통합 영상(묘목 심기 → 나무 성장 → 사계절 → 웨딩 피날레) 재생.
@@ -11,11 +11,14 @@ interface Props {
 
 export default function VideoIntro({ onComplete }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const bgRef = useRef<HTMLVideoElement>(null);
+  const doneRef = useRef(false);
+  const prefetchedRef = useRef(false);
+  const startedRef = useRef(false);
 
-  // 인트로 재생 중에 뒤이어 나올 MainSection 리소스(메인 일러스트 + 액자 대표 5장) 프리페치
-  // 전체보기 갤러리(20장)는 액자 터치 시점에 로드되므로 프리페치 대상에서 제외.
-  useEffect(() => {
+  const prefetchMainAssets = () => {
+    if (prefetchedRef.current) return;
+    prefetchedRef.current = true;
+
     const assets = [
       media('/images/frames/mainImage.jpg?v=2'),
       ...Array.from({ length: 5 }, (_, i) => media(`/weddingImages/main-${i + 1}.jpg`)),
@@ -24,43 +27,48 @@ export default function VideoIntro({ onComplete }: Props) {
       const img = new window.Image();
       img.src = src;
     });
+  };
+
+  const complete = () => {
+    if (doneRef.current) return;
+    doneRef.current = true;
+    onComplete();
+  };
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      if (!startedRef.current) complete();
+    }, 2000);
+    return () => window.clearTimeout(id);
   }, []);
 
   return (
     <div className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] md:max-w-[720px] z-50 bg-[#FDFAF5]">
-      {/* 블러 백드롭 (전 기기 공통 — 여백을 자연스럽게 채움) */}
-      <video
-        ref={bgRef}
-        src={INTRO_VIDEO}
-        autoPlay
-        muted
-        playsInline
-        preload="auto"
-        aria-hidden
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ filter: 'blur(28px) brightness(0.9)', transform: 'scale(1.1)' }}
-      />
-      {/* 메인 영상 — 원본 비율 유지 (contain) */}
       <video
         ref={videoRef}
-        src={INTRO_VIDEO}
+        src={media(INTRO_VIDEO)}
         autoPlay
         muted
         playsInline
-        preload="auto"
-        onEnded={onComplete}
+        preload="metadata"
+        onPlaying={() => {
+          startedRef.current = true;
+          window.setTimeout(prefetchMainAssets, 1200);
+        }}
+        onEnded={complete}
+        onError={complete}
+        onAbort={complete}
         className="absolute inset-0 w-full h-full object-contain"
       />
 
       {/* 영상 스킵하기 — 재생 중(=이 컴포넌트가 떠 있는 동안)에만 노출. 우측 상단 */}
       <button
-        onClick={onComplete}
+        onClick={complete}
         aria-label="영상 스킵하기"
-        className="absolute top-4 right-4 z-10 flex items-center gap-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white text-xs md:text-sm font-jua tracking-wide px-3.5 py-2 backdrop-blur-sm shadow-md transition-colors"
-        style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))' }}
+        className="absolute right-16 top-[max(1rem,env(safe-area-inset-top))] z-[60] flex items-center gap-1 rounded-full bg-black/40 hover:bg-black/60 text-white text-[11px] md:text-xs font-jua tracking-wide px-2.5 py-1.5 backdrop-blur-sm shadow-md transition-colors"
       >
         영상 스킵하기
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <path d="M5 4l10 8-10 8V4z" />
           <line x1="19" y1="5" x2="19" y2="19" />
         </svg>

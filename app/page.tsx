@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import VideoIntro from '@/sections/VideoIntro';
 import MainSection from '@/sections/MainSection';
 import InfoSection from '@/sections/InfoSection';
@@ -47,22 +48,35 @@ export default function Home() {
       />
 
       <main className="relative w-full max-w-[430px] md:max-w-[720px] mx-auto bg-[#FDFAF5] overflow-hidden lg:shadow-[0_0_60px_rgba(0,0,0,0.35)]">
-        <BackgroundMusic />
+        <BackgroundMusic intro={videosDone === false} />
 
-        {videosDone === false && (
-          <VideoIntro onComplete={handleVideoComplete} />
-        )}
+        <AnimatePresence initial={false}>
+          {videosDone === false && (
+            <motion.div
+              key="intro"
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.1, ease: 'easeInOut' }}
+            >
+              <VideoIntro onComplete={handleVideoComplete} />
+            </motion.div>
+          )}
 
-        {videosDone === true && (
-          <>
-            <MainSection onReplay={handleReplay} />
-            <InfoSection />
-            <LocationMap />
-            <AccountsSection />
-            <NoticeSection />
-            <KakaoShare />
-          </>
-        )}
+          {videosDone === true && (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.15, ease: 'easeOut' }}
+            >
+              <MainSection onReplay={handleReplay} />
+              <InfoSection />
+              <LocationMap />
+              <AccountsSection />
+              <NoticeSection />
+              <KakaoShare />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </>
   );

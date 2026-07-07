@@ -50,7 +50,7 @@ const ACCOUNT_GROUPS: AccountGroup[] = [
     side: '신랑측',
     accounts: [
       { role: '신랑', name: '신우진', bank: '신한은행', number: '110-386-342220' },
-      { role: '신랑 아버지', name: '신상영', bank: '기업은행', number: '11231321321' },
+      { role: '신랑 아버지', name: '신상영', bank: '기업은행', number: '378-005628-02-019' },
     ],
   },
   {

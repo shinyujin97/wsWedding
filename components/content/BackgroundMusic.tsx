@@ -2,52 +2,68 @@
 import { useEffect, useRef, useState } from 'react';
 import { media } from '@/lib/media';
 
-export default function BackgroundMusic() {
+export default function BackgroundMusic({ intro = false }: { intro?: boolean }) {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const loadingRef = useRef(false);
   const [playing, setPlaying] = useState(false);
+  const buttonPosition = intro ? 'fixed top-4 right-4 z-[80]' : 'fixed top-4 right-4 z-50';
+
+  const play = async () => {
+    const audio = audioRef.current;
+    if (!audio || loadingRef.current) return false;
+    if (!audio.paused) return true;
+    loadingRef.current = true;
+
+    try {
+      await audio.play();
+      setPlaying(true);
+      return true;
+    } catch {
+      setPlaying(false);
+      return false;
+    } finally {
+      loadingRef.current = false;
+    }
+  };
 
   useEffect(() => {
-    const play = (): Promise<boolean> => {
-      const p = audioRef.current?.play();
-      if (!p) return Promise.resolve(false);
-      return p.then(() => { setPlaying(true); return true; }).catch(() => false);
+    let active = true;
+    const events = ['pointerdown', 'touchstart', 'click', 'keydown'] as const;
+    const removeFallback = () => {
+      events.forEach((event) => document.removeEventListener(event, onInteract));
     };
-
-    // 먼저 autoplay 시도 (데스크탑 대부분 OK, 모바일은 막힘)
-    play().then((ok) => {
-      if (ok) return;
-      // 실패 시 첫 사용자 인터랙션 때 재생
-      const onInteract = () => {
-        play().then((started) => {
-          if (started) {
-            document.removeEventListener('touchstart', onInteract);
-            document.removeEventListener('click', onInteract);
-            document.removeEventListener('pointerdown', onInteract);
-          }
-        });
-      };
-      document.addEventListener('touchstart', onInteract);
-      document.addEventListener('click', onInteract);
-      document.addEventListener('pointerdown', onInteract);
+    const onInteract = () => { void play().then((started) => { if (started) removeFallback(); }); };
+    play().then((started) => {
+      if (active && !started) {
+        events.forEach((event) => document.addEventListener(event, onInteract, { passive: true }));
+      }
     });
+    return () => {
+      active = false;
+      removeFallback();
+    };
   }, []);
 
   const toggle = () => {
     if (!audioRef.current) return;
-    playing ? audioRef.current.pause() : audioRef.current.play();
-    setPlaying(p => !p);
+    if (playing) {
+      audioRef.current.pause();
+      setPlaying(false);
+    } else {
+      void play();
+    }
   };
 
   return (
     <>
-      <audio ref={audioRef} src={media('/music/SunlitStringWaltz.mp3')} loop />
+      <audio ref={audioRef} src={media('/music/SunlitStringWaltz.mp3')} loop preload="auto" autoPlay />
       <button
         onClick={toggle}
         aria-pressed={playing}
-        className="fixed top-4 right-4 z-50 flex h-9 w-9 items-center justify-center rounded-full
+        className={`${buttonPosition} flex h-9 w-9 items-center justify-center rounded-full
           border border-[#d8c39a]/70 bg-[#fffaf0]/85 text-[#7a6035]
           shadow-[0_8px_22px_-14px_rgba(78,63,42,0.55)] ring-1 ring-white/70
-          backdrop-blur-md transition hover:bg-white/95 hover:text-[#6c5126] active:scale-95"
+          backdrop-blur-md transition hover:bg-white/95 hover:text-[#6c5126] active:scale-95`}
         aria-label={playing ? '음악 끄기' : '음악 켜기'}
       >
         <svg
