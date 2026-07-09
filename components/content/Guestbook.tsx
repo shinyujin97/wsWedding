@@ -135,7 +135,7 @@ export default function Guestbook() {
         <h2 className="text-base md:text-lg text-stone-700 font-medium" style={{ fontFamily: 'serif' }}>
           방명록
         </h2>
-        <p className="text-xs text-stone-400">축하의 마음을 짧게 남겨 주세요.</p>
+        <p className="text-xs text-stone-400">축하의 마음을 남겨 주세요.</p>
       </div>
 
       <div className="max-w-md mx-auto">

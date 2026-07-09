@@ -1,12 +1,29 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
+import { arrayUnion, doc, runTransaction, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 // 카톡/OG 공유 썸네일 (Blob, 새 가든 일러스트 — 새 URL로 캐시·재스크랩 유도)
 const THUMBNAIL_URL =
   'https://304umf8a11s9xgqf.public.blob.vercel-storage.com/Thumbnail-v2-eBelCLJ9EmU62Xaa4qSc3oSpa2JOuM.jpg';
 const INVITE_PARAM = 'invite';
+const INVITE_COLLECTION = 'invite_codes';
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const INVITE_CODE_RE = /^[a-zA-Z0-9_-]{1,32}$/;
+const ACTION_TARGET_NAME = {
+  kakao_share: '카카오톡 공유',
+  link_copy: '링크 복사',
+} as const;
+
+type ShareAction = keyof typeof ACTION_TARGET_NAME;
+type InviteData = {
+  code?: unknown;
+  rootCode?: unknown;
+  sourcePath?: unknown;
+  sourceAction?: unknown;
+  childCodes?: unknown;
+};
 
 declare global {
   interface Window { Kakao: any; }
@@ -14,6 +31,8 @@ declare global {
 
 export default function KakaoShare() {
   const [ready, setReady] = useState(false);
+  const sourceCodeRef = useRef<string | null>(null);
+  const createdCodesRef = useRef<Partial<Record<ShareAction, string>>>({});
 
   const initKakao = () => {
     try {
@@ -24,23 +43,98 @@ export default function KakaoShare() {
     if (window.Kakao) setReady(true); // SDK 있으면 무조건 버튼 활성화
   };
 
-  const createInviteCode = () => {
-    if (window.crypto?.randomUUID) {
-      return window.crypto.randomUUID().replaceAll('-', '').slice(0, 10);
+  const isInviteCode = (value: unknown): value is string => (
+    typeof value === 'string' && INVITE_CODE_RE.test(value)
+  );
+
+  const createInviteCode = (length = 8) => {
+    if (!window.crypto?.getRandomValues) {
+      return Math.random().toString(36).slice(2, 2 + length).toUpperCase();
     }
-    return Math.random().toString(36).slice(2, 12);
+    const bytes = window.crypto.getRandomValues(new Uint8Array(length));
+    return Array.from(bytes, (byte) => CODE_CHARS[byte % CODE_CHARS.length]).join('');
   };
 
-  const getShareUrl = () => {
+  const getUrlWithInvite = (code: string) => {
     const url = new URL(window.location.href);
-    const currentCode = url.searchParams.get(INVITE_PARAM);
+    url.searchParams.set(INVITE_PARAM, code);
+    return url;
+  };
 
-    if (!currentCode || !INVITE_CODE_RE.test(currentCode)) {
-      url.searchParams.set(INVITE_PARAM, createInviteCode());
-      window.history.replaceState(null, '', url.toString());
+  const createInviteUrl = async (action: ShareAction) => {
+    const firestore = db;
+    if (!firestore) throw new Error('Firebase is not configured');
+
+    const url = new URL(window.location.href);
+    if (!sourceCodeRef.current) {
+      const sourceInviteCode = url.searchParams.get(INVITE_PARAM);
+      sourceCodeRef.current = sourceInviteCode && INVITE_CODE_RE.test(sourceInviteCode) ? sourceInviteCode : 'direct';
     }
 
-    return url.toString();
+    const cachedCode = createdCodesRef.current[action];
+    if (cachedCode) return getUrlWithInvite(cachedCode).toString();
+
+    const sourceCode = sourceCodeRef.current;
+
+    const code = await runTransaction(firestore, async (transaction) => {
+      const parentRef = sourceCode === 'direct' ? null : doc(firestore, INVITE_COLLECTION, sourceCode);
+      const parentSnap = parentRef ? await transaction.get(parentRef) : null;
+      const parent = parentSnap?.exists() ? parentSnap.data() as InviteData : null;
+      const childCodes = Array.isArray(parent?.childCodes)
+        ? parent.childCodes.filter(isInviteCode).slice(0, 50)
+        : [];
+
+      for (const childCode of childCodes) {
+        const childSnap = await transaction.get(doc(firestore, INVITE_COLLECTION, childCode));
+        const child = childSnap.exists() ? childSnap.data() as InviteData : null;
+        if (child?.sourceAction === action && isInviteCode(child.code)) return child.code;
+      }
+
+      let nextCode = '';
+      let codeRef = doc(firestore, INVITE_COLLECTION, createInviteCode());
+      for (let attempt = 0; attempt < 8; attempt += 1) {
+        nextCode = createInviteCode();
+        codeRef = doc(firestore, INVITE_COLLECTION, nextCode);
+        if (!(await transaction.get(codeRef)).exists()) break;
+        nextCode = '';
+      }
+      if (!nextCode) throw new Error('Invite code collision');
+
+      const rootCode = parent
+        ? (isInviteCode(parent.rootCode) ? parent.rootCode : isInviteCode(parent.code) ? parent.code : sourceCode)
+        : sourceCode === 'direct' ? nextCode : sourceCode;
+      const parentPath = parent && typeof parent.sourcePath === 'string' && parent.sourcePath
+        ? parent.sourcePath
+        : sourceCode;
+      const sourcePath = sourceCode === 'direct' ? nextCode : `${parentPath} > ${nextCode}`;
+
+      transaction.set(codeRef, {
+        code: nextCode,
+        targetName: ACTION_TARGET_NAME[action],
+        parentCode: sourceCode === 'direct' ? null : sourceCode,
+        rootCode,
+        sourcePath,
+        sourceAction: action,
+        inviteUrl: getUrlWithInvite(nextCode).toString(),
+        childCodes: [],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+      if (parentRef && parentSnap?.exists()) {
+        transaction.update(parentRef, {
+          childCodes: arrayUnion(nextCode),
+          updatedAt: serverTimestamp(),
+        });
+      }
+      return nextCode;
+    });
+
+    createdCodesRef.current[action] = code;
+    if (sourceCode === 'direct') sourceCodeRef.current = code;
+
+    const inviteUrl = getUrlWithInvite(code);
+
+    return inviteUrl.toString();
   };
 
   // SDK 준비 여부를 직접 폴링해 "마운트될 때마다" 확실히 초기화·활성화한다.
@@ -56,10 +150,17 @@ export default function KakaoShare() {
     return () => clearInterval(id);
   }, []);
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (!window.Kakao) { alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해주세요.'); return; }
     if (!window.Kakao.isInitialized()) initKakao();
-    const shareUrl = getShareUrl();
+
+    let shareUrl = '';
+    try {
+      shareUrl = await createInviteUrl('kakao_share');
+    } catch {
+      alert('초대 링크 생성에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
 
     window.Kakao.Share.sendDefault({
       objectType: 'feed',
@@ -85,8 +186,12 @@ export default function KakaoShare() {
   };
 
   const handleCopyLink = async () => {
-    await navigator.clipboard.writeText(getShareUrl());
-    alert('링크가 복사되었습니다!');
+    try {
+      await navigator.clipboard.writeText(await createInviteUrl('link_copy'));
+      alert('링크가 복사되었습니다!');
+    } catch {
+      alert('초대 링크 생성에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   return (

@@ -2,6 +2,63 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email == 'swjtwin@gmail.com';
+    }
+
+    function validCode(value) {
+      return value is string
+        && value.size() > 0
+        && value.size() <= 32;
+    }
+
+    function validNullableCode(value) {
+      return value == null || validCode(value);
+    }
+
+    function validInviteCreate(code) {
+      return request.resource.data.keys().hasOnly([
+          'code',
+          'targetName',
+          'parentCode',
+          'rootCode',
+          'sourcePath',
+          'sourceAction',
+          'inviteUrl',
+          'childCodes',
+          'createdAt',
+          'updatedAt',
+        ])
+        && request.resource.data.code == code
+        && validCode(request.resource.data.code)
+        && request.resource.data.targetName is string
+        && request.resource.data.targetName.size() > 0
+        && request.resource.data.targetName.size() <= 30
+        && validNullableCode(request.resource.data.parentCode)
+        && validCode(request.resource.data.rootCode)
+        && request.resource.data.sourcePath is string
+        && request.resource.data.sourcePath.size() > 0
+        && request.resource.data.sourcePath.size() <= 300
+        && request.resource.data.sourceAction in ['kakao_share', 'link_copy']
+        && request.resource.data.inviteUrl is string
+        && request.resource.data.inviteUrl.size() > 0
+        && request.resource.data.inviteUrl.size() <= 500
+        && request.resource.data.childCodes is list
+        && request.resource.data.childCodes.size() == 0
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    function validInviteChildUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['childCodes', 'updatedAt'])
+        && request.resource.data.childCodes is list
+        && resource.data.childCodes is list
+        && request.resource.data.childCodes.size() >= resource.data.childCodes.size()
+        && request.resource.data.childCodes.size() <= 100
+        && request.resource.data.updatedAt == request.time;
+    }
+
     match /guestbook_entries/{entryId} {
       allow read: if true;
       allow create: if request.resource.data.keys().hasOnly(['name', 'message', 'inviteCode', 'createdAt'])
@@ -15,7 +72,15 @@ service cloud.firestore {
         && request.resource.data.inviteCode.size() > 0
         && request.resource.data.inviteCode.size() <= 32
         && request.resource.data.createdAt == request.time;
-      allow update, delete: if false;
+      allow update, delete: if isAdmin();
+    }
+
+    match /invite_codes/{code} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create: if isAdmin() || validInviteCreate(code);
+      allow update: if isAdmin() || validInviteChildUpdate();
+      allow delete: if isAdmin();
     }
   }
 }
