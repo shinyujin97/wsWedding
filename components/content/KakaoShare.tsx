@@ -5,6 +5,8 @@ import Script from 'next/script';
 // 카톡/OG 공유 썸네일 (Blob, 새 가든 일러스트 — 새 URL로 캐시·재스크랩 유도)
 const THUMBNAIL_URL =
   'https://304umf8a11s9xgqf.public.blob.vercel-storage.com/Thumbnail-v2-eBelCLJ9EmU62Xaa4qSc3oSpa2JOuM.jpg';
+const INVITE_PARAM = 'invite';
+const INVITE_CODE_RE = /^[a-zA-Z0-9_-]{1,32}$/;
 
 declare global {
   interface Window { Kakao: any; }
@@ -20,6 +22,25 @@ export default function KakaoShare() {
       }
     } catch { /* init 중복/실패해도 무시 */ }
     if (window.Kakao) setReady(true); // SDK 있으면 무조건 버튼 활성화
+  };
+
+  const createInviteCode = () => {
+    if (window.crypto?.randomUUID) {
+      return window.crypto.randomUUID().replaceAll('-', '').slice(0, 10);
+    }
+    return Math.random().toString(36).slice(2, 12);
+  };
+
+  const getShareUrl = () => {
+    const url = new URL(window.location.href);
+    const currentCode = url.searchParams.get(INVITE_PARAM);
+
+    if (!currentCode || !INVITE_CODE_RE.test(currentCode)) {
+      url.searchParams.set(INVITE_PARAM, createInviteCode());
+      window.history.replaceState(null, '', url.toString());
+    }
+
+    return url.toString();
   };
 
   // SDK 준비 여부를 직접 폴링해 "마운트될 때마다" 확실히 초기화·활성화한다.
@@ -38,6 +59,7 @@ export default function KakaoShare() {
   const handleShare = () => {
     if (!window.Kakao) { alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해주세요.'); return; }
     if (!window.Kakao.isInitialized()) initKakao();
+    const shareUrl = getShareUrl();
 
     window.Kakao.Share.sendDefault({
       objectType: 'feed',
@@ -46,16 +68,16 @@ export default function KakaoShare() {
         description: '2026년 10월 17일 토요일 오후 12시 50분\n아르베웨딩',
         imageUrl: THUMBNAIL_URL,
         link: {
-          mobileWebUrl: window.location.href,
-          webUrl: window.location.href,
+          mobileWebUrl: shareUrl,
+          webUrl: shareUrl,
         },
       },
       buttons: [
         {
           title: '청첩장 보기',
           link: {
-            mobileWebUrl: window.location.href,
-            webUrl: window.location.href,
+            mobileWebUrl: shareUrl,
+            webUrl: shareUrl,
           },
         },
       ],
@@ -63,7 +85,7 @@ export default function KakaoShare() {
   };
 
   const handleCopyLink = async () => {
-    await navigator.clipboard.writeText(window.location.href);
+    await navigator.clipboard.writeText(getShareUrl());
     alert('링크가 복사되었습니다!');
   };
 

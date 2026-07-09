@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { addDoc, collection, limit, onSnapshot, orderBy, query, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, onSnapshot, query, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '@/lib/firebase';
 
 type GuestbookEntry = {
@@ -13,10 +13,28 @@ type GuestbookEntry = {
 
 const COLLECTION = 'guestbook_entries';
 const COOLDOWN_KEY = 'wedding-guestbook-last-submit';
+const INVITE_CODE_RE = /^[a-zA-Z0-9_-]{1,32}$/;
 
 function formatDate(value: string | null) {
   if (!value) return '';
   return new Intl.DateTimeFormat('ko-KR', { month: 'long', day: 'numeric' }).format(new Date(value));
+}
+
+function readInviteCode() {
+  const code = new URLSearchParams(window.location.search).get('invite')?.trim();
+  return code && INVITE_CODE_RE.test(code) ? code : 'direct';
+}
+
+function GuestbookCard({ entry }: { entry: GuestbookEntry }) {
+  return (
+    <article className="rounded-2xl border border-stone-200 bg-white/50 px-5 py-4">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <p className="truncate text-sm font-medium text-stone-700">{entry.name}</p>
+        <time className="shrink-0 text-[11px] text-stone-400">{formatDate(entry.createdAt)}</time>
+      </div>
+      <p className="whitespace-pre-wrap break-words text-sm leading-6 text-stone-600">{entry.message}</p>
+    </article>
+  );
 }
 
 export default function Guestbook() {
@@ -27,6 +45,9 @@ export default function Guestbook() {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const visibleEntries = entries.slice(0, 4);
+  const hiddenEntries = entries.slice(4);
 
   useEffect(() => {
     if (!db) {
@@ -34,12 +55,12 @@ export default function Guestbook() {
       return;
     }
 
-    const guestbookQuery = query(collection(db, COLLECTION), orderBy('createdAt', 'desc'), limit(30));
+    const guestbookQuery = query(collection(db, COLLECTION));
     return onSnapshot(
       guestbookQuery,
       (snapshot) => {
-        setEntries(
-          snapshot.docs.map((doc) => {
+        const nextEntries = snapshot.docs
+          .map((doc) => {
             const data = doc.data();
             const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : null;
             return {
@@ -48,8 +69,10 @@ export default function Guestbook() {
               message: String(data.message ?? ''),
               createdAt,
             };
-          }),
-        );
+          })
+          .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
+          .slice(0, 30);
+        setEntries(nextEntries);
         setLoading(false);
       },
       () => {
@@ -83,6 +106,7 @@ export default function Guestbook() {
       await addDoc(collection(db, COLLECTION), {
         name: trimmedName.slice(0, 12),
         message: trimmedMessage.slice(0, 150),
+        inviteCode: readInviteCode(),
         createdAt: serverTimestamp(),
       });
       window.localStorage.setItem(COOLDOWN_KEY, String(Date.now()));
@@ -167,19 +191,53 @@ export default function Guestbook() {
               {loading ? (
                 <p className="text-center text-sm text-stone-400">불러오는 중입니다.</p>
               ) : entries.length ? (
-                entries.map((entry) => (
-                  <article key={entry.id} className="rounded-2xl border border-stone-200 bg-white/50 px-5 py-4">
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                      <p className="truncate text-sm font-medium text-stone-700">{entry.name}</p>
-                      <time className="shrink-0 text-[11px] text-stone-400">{formatDate(entry.createdAt)}</time>
-                    </div>
-                    <p className="whitespace-pre-wrap break-words text-sm leading-6 text-stone-600">{entry.message}</p>
-                  </article>
-                ))
+                <>
+                  {visibleEntries.map((entry) => (
+                    <GuestbookCard key={entry.id} entry={entry} />
+                  ))}
+                  {hiddenEntries.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setSheetOpen(true)}
+                      className="w-full rounded-full border border-stone-200 bg-white/60 px-5 py-3 text-xs font-medium tracking-[0.16em] text-stone-500 active:scale-[0.99] transition-transform"
+                    >
+                      더보기 {hiddenEntries.length}
+                    </button>
+                  )}
+                </>
               ) : (
                 <p className="text-center text-sm text-stone-400">첫 번째 축하 메시지를 남겨 주세요.</p>
               )}
             </div>
+
+            {sheetOpen && (
+              <div className="fixed inset-0 z-[90] flex items-end justify-center bg-black/35 px-3" role="dialog" aria-modal="true">
+                <button
+                  type="button"
+                  aria-label="방명록 더보기 닫기"
+                  className="absolute inset-0 cursor-default"
+                  onClick={() => setSheetOpen(false)}
+                />
+                <div className="relative w-full max-w-[430px] rounded-t-3xl bg-[#FDFAF5] px-5 pb-6 pt-4 shadow-[0_-18px_45px_rgba(0,0,0,0.18)] md:max-w-[720px]">
+                  <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-stone-300" />
+                  <div className="mb-4 flex items-center justify-between">
+                    <p className="text-sm font-medium text-stone-700">더 남겨진 마음</p>
+                    <button
+                      type="button"
+                      onClick={() => setSheetOpen(false)}
+                      className="rounded-full border border-stone-200 bg-white/70 px-3 py-1.5 text-xs text-stone-500"
+                    >
+                      닫기
+                    </button>
+                  </div>
+                  <div className="max-h-[60vh] space-y-3 overflow-y-auto pb-2">
+                    {hiddenEntries.map((entry) => (
+                      <GuestbookCard key={entry.id} entry={entry} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
