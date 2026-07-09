@@ -9,6 +9,7 @@ import AccountsSection from '@/sections/AccountsSection';
 import NoticeSection from '@/sections/NoticeSection';
 import KakaoShare from '@/components/content/KakaoShare';
 import BackgroundMusic from '@/components/content/BackgroundMusic';
+import Guestbook from '@/components/content/Guestbook';
 import { media } from '@/lib/media';
 
 const SEEN_KEY = 'wedding-video-seen';
@@ -73,6 +74,7 @@ export default function Home() {
               <LocationMap />
               <AccountsSection />
               <NoticeSection />
+              <Guestbook />
               <KakaoShare />
             </motion.div>
           )}
