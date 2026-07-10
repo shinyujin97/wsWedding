@@ -11,7 +11,10 @@ export default function BackgroundMusic({ intro = false }: { intro?: boolean }) 
   const play = async () => {
     const audio = audioRef.current;
     if (!audio || loadingRef.current) return false;
-    if (!audio.paused) return true;
+    if (!audio.paused) {
+      setPlaying(true);
+      return true;
+    }
     loadingRef.current = true;
 
     try {
@@ -45,9 +48,10 @@ export default function BackgroundMusic({ intro = false }: { intro?: boolean }) 
   }, []);
 
   const toggle = () => {
-    if (!audioRef.current) return;
-    if (playing) {
-      audioRef.current.pause();
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (!audio.paused) {
+      audio.pause();
       setPlaying(false);
     } else {
       void play();
@@ -56,9 +60,22 @@ export default function BackgroundMusic({ intro = false }: { intro?: boolean }) 
 
   return (
     <>
-      <audio ref={audioRef} src={media('/music/SunlitStringWaltz.mp3')} loop preload="auto" autoPlay />
+      <audio
+        ref={audioRef}
+        src={media('/music/SunlitStringWaltz.mp3')}
+        loop
+        preload="auto"
+        autoPlay
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+      />
       <button
-        onClick={toggle}
+        onPointerDown={(event) => event.stopPropagation()}
+        onKeyDown={(event) => event.stopPropagation()}
+        onClick={(event) => {
+          event.stopPropagation();
+          toggle();
+        }}
         aria-pressed={playing}
         className={`${buttonPosition} flex h-9 w-9 items-center justify-center rounded-full
           border border-[#d8c39a]/70 bg-[#fffaf0]/85 text-[#7a6035]
