@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { media } from '@/lib/media';
 
 // 단일 통합 영상(묘목 심기 → 나무 성장 → 사계절 → 웨딩 피날레) 재생.
@@ -14,6 +14,7 @@ export default function VideoIntro({ onComplete }: Props) {
   const doneRef = useRef(false);
   const prefetchedRef = useRef(false);
   const startedRef = useRef(false);
+  const [showOnboarding, setShowOnboarding] = useState(true);
 
   const prefetchMainAssets = () => {
     if (prefetchedRef.current) return;
@@ -60,6 +61,26 @@ export default function VideoIntro({ onComplete }: Props) {
         onAbort={complete}
         className="absolute inset-0 w-full h-full object-contain"
       />
+
+      {showOnboarding && (
+        <button
+          type="button"
+          onClick={() => setShowOnboarding(false)}
+          className="absolute inset-x-6 bottom-[max(4.5rem,env(safe-area-inset-bottom))] z-[55]
+            mx-auto flex max-w-[320px] flex-col items-center gap-2 rounded-2xl
+            border border-white/25 bg-black/20 px-5 py-4 text-center text-white/90
+            shadow-[0_12px_28px_rgba(0,0,0,0.12)] backdrop-blur-[2px]
+            transition active:scale-[0.99]"
+          aria-label="음악 재생 안내 닫기"
+        >
+          <span className="text-sm font-jua tracking-wide md:text-base">
+            화면을 탭하면 음악이 함께 재생돼요
+          </span>
+          <span className="text-[11px] text-white/60 md:text-xs">
+            탭해서 안내 닫기
+          </span>
+        </button>
+      )}
 
       {/* 영상 스킵하기 — 재생 중(=이 컴포넌트가 떠 있는 동안)에만 노출. 우측 상단 */}
       <button
