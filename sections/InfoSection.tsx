@@ -106,7 +106,7 @@ export default function InfoSection() {
             오랜 사랑을 더 깊은 약속으로 이어가려 합니다.
           </p>
           <p className="text-sm md:text-base leading-8 md:leading-9 text-stone-600 font-light mt-4" style={{ fontFamily: 'serif' }}>
-            저희의 새로운 시작을
+            저희의 시작을
             <br />
             따뜻한 축복으로 함께해 주세요.
           </p>

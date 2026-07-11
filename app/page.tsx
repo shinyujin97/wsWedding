@@ -17,6 +17,7 @@ const SEEN_KEY = 'wedding-video-seen';
 export default function Home() {
   // null = 아직 localStorage 확인 전 (SSR/hydration 대응)
   const [videosDone, setVideosDone] = useState<boolean | null>(null);
+  const [musicPlaying, setMusicPlaying] = useState(false);
 
   useEffect(() => {
     let seen = false;
@@ -30,6 +31,9 @@ export default function Home() {
   };
 
   const handleReplay = () => setVideosDone(false);
+  const requestMusicPlay = () => {
+    window.dispatchEvent(new Event('wedding:request-music-play'));
+  };
 
   return (
     <>
@@ -49,7 +53,10 @@ export default function Home() {
       />
 
       <main className="relative w-full max-w-[430px] md:max-w-[720px] mx-auto bg-[#FDFAF5] overflow-hidden lg:shadow-[0_0_60px_rgba(0,0,0,0.35)]">
-        <BackgroundMusic intro={videosDone === false} />
+        <BackgroundMusic
+          intro={videosDone === false}
+          onPlayingChange={setMusicPlaying}
+        />
 
         <AnimatePresence initial={false}>
           {videosDone === false && (
@@ -58,7 +65,11 @@ export default function Home() {
               exit={{ opacity: 0 }}
               transition={{ duration: 1.1, ease: 'easeInOut' }}
             >
-              <VideoIntro onComplete={handleVideoComplete} />
+              <VideoIntro
+                onComplete={handleVideoComplete}
+                musicPlaying={musicPlaying}
+                onRequestMusicPlay={requestMusicPlay}
+              />
             </motion.div>
           )}
 

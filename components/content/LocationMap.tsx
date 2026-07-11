@@ -113,6 +113,13 @@ export default function LocationMap() {
         strategy="afterInteractive"
       />
       <section className="px-6 md:px-12 py-12 md:py-16 bg-[#FDFAF5]">
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <div className="h-px w-12 bg-stone-300/50" />
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.4" />
+          </svg>
+          <div className="h-px w-12 bg-stone-300/50" />
+        </div>
         <p className="text-xs md:text-sm tracking-widest text-stone-500 text-center mb-6 md:mb-8">오시는 길</p>
 
         <div className="space-y-2 pb-6 text-center text-stone-700">

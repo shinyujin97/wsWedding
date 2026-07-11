@@ -283,7 +283,7 @@ export default function FrameTouches() {
       {/* 터치 힌트 — 섹션 기준 % 좌표로 완전 반응형 */}
       {hintShown && !DEBUG && (
         <span
-          className="absolute z-20 -translate-x-1/2 text-[9px] md:text-[12px] font-jua tracking-[0.15em] px-2 py-0.5 rounded-full bg-white/85 text-stone-700 shadow-sm whitespace-nowrap animate-pulse pointer-events-none"
+          className="absolute z-30 -translate-x-1/2 rounded-full border border-[#c2a06c]/45 bg-white/95 px-2.5 py-1 text-[10px] md:text-[12px] font-jua tracking-[0.12em] text-stone-700 shadow-md ring-2 ring-white/50 whitespace-nowrap animate-pulse pointer-events-none"
           /* 중앙 액자(id6: x44.2 y25.5 w10.1) 오른쪽 위 모서리 근처 */
           style={{ left: '56%', top: '23.5%' }}
         >

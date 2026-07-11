@@ -2,11 +2,26 @@
 import { useEffect, useRef, useState } from 'react';
 import { media } from '@/lib/media';
 
-export default function BackgroundMusic({ intro = false }: { intro?: boolean }) {
+type BackgroundMusicProps = {
+  intro?: boolean;
+  onPlayingChange?: (playing: boolean) => void;
+};
+
+export default function BackgroundMusic({
+  intro = false,
+  onPlayingChange,
+}: BackgroundMusicProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const loadingRef = useRef(false);
+  const playingRef = useRef(false);
   const [playing, setPlaying] = useState(false);
   const buttonPosition = intro ? 'fixed top-4 right-4 z-[80]' : 'fixed top-4 right-4 z-50';
+
+  const setPlayingState = (nextPlaying: boolean) => {
+    playingRef.current = nextPlaying;
+    setPlaying(nextPlaying);
+    onPlayingChange?.(nextPlaying);
+  };
 
   const makeAudible = (audio: HTMLAudioElement) => {
     audio.defaultMuted = false;
@@ -16,12 +31,15 @@ export default function BackgroundMusic({ intro = false }: { intro?: boolean }) 
 
   const syncPlaying = () => {
     const audio = audioRef.current;
-    setPlaying(Boolean(audio && !audio.paused && !audio.muted && audio.volume > 0));
+    const nextPlaying = Boolean(audio && !audio.paused && !audio.muted && audio.volume > 0);
+    if (playingRef.current !== nextPlaying) {
+      setPlayingState(nextPlaying);
+    }
   };
 
-  const play = async () => {
+  const play = async (force = false) => {
     const audio = audioRef.current;
-    if (!audio || loadingRef.current) return false;
+    if (!audio || (loadingRef.current && !force)) return false;
     makeAudible(audio);
     if (!audio.paused) {
       syncPlaying();
@@ -34,7 +52,7 @@ export default function BackgroundMusic({ intro = false }: { intro?: boolean }) 
       syncPlaying();
       return true;
     } catch {
-      setPlaying(false);
+      setPlayingState(false);
       return false;
     } finally {
       loadingRef.current = false;
@@ -47,7 +65,7 @@ export default function BackgroundMusic({ intro = false }: { intro?: boolean }) 
     const removeFallback = () => {
       events.forEach((event) => document.removeEventListener(event, onInteract));
     };
-    const onInteract = () => { void play().then((started) => { if (started) removeFallback(); }); };
+    const onInteract = () => { void play(true).then((started) => { if (started) removeFallback(); }); };
     play().then((started) => {
       if (active && !started) {
         events.forEach((event) => document.addEventListener(event, onInteract, { passive: true }));
@@ -59,14 +77,20 @@ export default function BackgroundMusic({ intro = false }: { intro?: boolean }) 
     };
   }, []);
 
+  useEffect(() => {
+    const onPlayRequest = () => { void play(true); };
+    window.addEventListener('wedding:request-music-play', onPlayRequest);
+    return () => window.removeEventListener('wedding:request-music-play', onPlayRequest);
+  }, []);
+
   const toggle = () => {
     const audio = audioRef.current;
     if (!audio) return;
     if (!audio.paused && !audio.muted && audio.volume > 0) {
       audio.pause();
-      setPlaying(false);
+      setPlayingState(false);
     } else {
-      void play();
+      void play(true);
     }
   };
 
