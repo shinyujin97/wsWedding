@@ -20,7 +20,6 @@ function Cell({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex min-w-[56px] md:min-w-[68px] flex-col items-center">
       <div className="relative w-[56px] md:w-[68px] overflow-hidden rounded-lg border border-[#d8bf8f]/60 bg-gradient-to-b from-white/90 to-[#f7efe2]/80 py-3 md:py-3.5 shadow-[0_12px_26px_-18px_rgba(70,52,28,0.55)]">
-        <span className="absolute inset-x-3 top-1 h-px bg-gradient-to-r from-transparent via-[#c2a06c]/50 to-transparent" />
         <span
           className="block text-2xl md:text-3xl font-semibold text-[#5b4730] tabular-nums leading-none"
           style={{ fontFamily: 'serif' }}

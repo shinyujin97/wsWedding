@@ -101,14 +101,16 @@ export default function InfoSection() {
           </div>
           <p className="text-[13px] md:text-xs tracking-[0.4em] text-stone-400 mb-5 uppercase">초대합니다</p>
           <p className="text-sm md:text-base leading-8 md:leading-9 text-stone-600 font-light" style={{ fontFamily: 'serif' }}>
+            익숙한 손을 잡고도
+            <br />
             새로운 마음으로 설레는 10월,
             <br />
-            오랜 사랑을 더 깊은 약속으로 이어가려 합니다.
+            오랜 사랑을 평생의 약속으로 이어가려 합니다.
           </p>
           <p className="text-sm md:text-base leading-8 md:leading-9 text-stone-600 font-light mt-4" style={{ fontFamily: 'serif' }}>
-            저희의 시작을
+            저희의 사랑이 결실을 맺는 뜻깊은 날,
             <br />
-            따뜻한 축복으로 함께해 주세요.
+            따뜻한 축복으로 함께해 주시면 감사하겠습니다.
           </p>
         </div>
       </AnimatedBlock>
