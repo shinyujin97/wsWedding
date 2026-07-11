@@ -142,7 +142,7 @@ export default function InfoSection() {
       <AnimatedBlock index={4}>
         <div className="mb-14">
           <p className="text-[16px] md:text-xs tracking-[0.3em] text-stone-400 text-center mb-6 uppercase">
-            2026 10월
+            2026년 10월
           </p>
           <div className="grid grid-cols-7 gap-x-1 gap-y-1 md:gap-y-1.5 text-center max-w-[360px] md:max-w-[500px] mx-auto">
             {['일', '월', '화', '수', '목', '금', '토'].map((d) => (

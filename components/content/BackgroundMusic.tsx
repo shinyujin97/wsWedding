@@ -8,18 +8,30 @@ export default function BackgroundMusic({ intro = false }: { intro?: boolean }) 
   const [playing, setPlaying] = useState(false);
   const buttonPosition = intro ? 'fixed top-4 right-4 z-[80]' : 'fixed top-4 right-4 z-50';
 
+  const makeAudible = (audio: HTMLAudioElement) => {
+    audio.defaultMuted = false;
+    audio.muted = false;
+    if (audio.volume === 0) audio.volume = 1;
+  };
+
+  const syncPlaying = () => {
+    const audio = audioRef.current;
+    setPlaying(Boolean(audio && !audio.paused && !audio.muted && audio.volume > 0));
+  };
+
   const play = async () => {
     const audio = audioRef.current;
     if (!audio || loadingRef.current) return false;
+    makeAudible(audio);
     if (!audio.paused) {
-      setPlaying(true);
+      syncPlaying();
       return true;
     }
     loadingRef.current = true;
 
     try {
       await audio.play();
-      setPlaying(true);
+      syncPlaying();
       return true;
     } catch {
       setPlaying(false);
@@ -50,7 +62,7 @@ export default function BackgroundMusic({ intro = false }: { intro?: boolean }) 
   const toggle = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (!audio.paused) {
+    if (!audio.paused && !audio.muted && audio.volume > 0) {
       audio.pause();
       setPlaying(false);
     } else {
@@ -66,8 +78,10 @@ export default function BackgroundMusic({ intro = false }: { intro?: boolean }) 
         loop
         preload="auto"
         autoPlay
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
+        muted={false}
+        onPlay={syncPlaying}
+        onPause={syncPlaying}
+        onVolumeChange={syncPlaying}
       />
       <button
         onPointerDown={(event) => event.stopPropagation()}
