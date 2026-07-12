@@ -24,12 +24,15 @@ type InviteData = {
   sourceAction?: unknown;
   childCodes?: unknown;
 };
+type KakaoShareProps = {
+  variant?: 'section' | 'floating';
+};
 
 declare global {
   interface Window { Kakao: any; }
 }
 
-export default function KakaoShare() {
+export default function KakaoShare({ variant = 'section' }: KakaoShareProps) {
   const [ready, setReady] = useState(false);
   const sourceCodeRef = useRef<string | null>(null);
   const createdCodesRef = useRef<Partial<Record<ShareAction, string>>>({});
@@ -194,6 +197,15 @@ export default function KakaoShare() {
     }
   };
 
+  const kakaoIcon = (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
+      <path
+        d="M9 1C4.58 1 1 3.79 1 7.21c0 2.17 1.45 4.08 3.63 5.17l-.93 3.44c-.08.3.26.54.52.37l4.1-2.72c.22.02.44.03.68.03 4.42 0 8-2.79 8-6.29C17 3.79 13.42 1 9 1z"
+        fill="#191919"
+      />
+    </svg>
+  );
+
   return (
     <>
       <Script
@@ -203,43 +215,49 @@ export default function KakaoShare() {
         onLoad={initKakao}
       />
 
-      <section className="px-6 md:px-12 py-12 md:py-16 space-y-3 md:space-y-4">
-        <p className="text-xs md:text-sm tracking-widest text-stone-400 text-center mb-6 md:mb-8">
-          SHARE
-        </p>
-
-        {/* 카카오톡 공유 */}
+      {variant === 'floating' ? (
         <button
           onClick={handleShare}
           disabled={!ready}
-          className="w-full flex items-center justify-center gap-2 px-5 py-4 md:py-5
-            rounded-2xl bg-[#FEE500] text-[#191919] font-medium text-sm md:text-base
-            active:scale-[0.98] transition-transform disabled:opacity-50"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-[#e7ce4a] bg-[#FEE500] text-[#191919] shadow-md ring-1 ring-white/80 transition active:scale-95 disabled:opacity-50"
+          aria-label="카카오톡 공유하기"
         >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path
-              d="M9 1C4.58 1 1 3.79 1 7.21c0 2.17 1.45 4.08 3.63 5.17l-.93 3.44c-.08.3.26.54.52.37l4.1-2.72c.22.02.44.03.68.03 4.42 0 8-2.79 8-6.29C17 3.79 13.42 1 9 1z"
-              fill="#191919"
-            />
-          </svg>
-          카카오톡으로 공유하기
+          {kakaoIcon}
         </button>
+      ) : (
+        <section className="px-6 md:px-12 py-12 md:py-16 space-y-3 md:space-y-4">
+          <p className="text-xs md:text-sm tracking-widest text-stone-400 text-center mb-6 md:mb-8">
+            SHARE
+          </p>
 
-        {/* 링크 복사 */}
-        <button
-          onClick={handleCopyLink}
-          className="w-full flex items-center justify-center gap-2 px-5 py-4 md:py-5
-            rounded-2xl bg-stone-100 border border-stone-200
-            text-stone-600 font-medium text-sm md:text-base
-            active:scale-[0.98] transition-transform"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-          </svg>
-          링크 복사하기
-        </button>
-      </section>
+          {/* 카카오톡 공유 */}
+          <button
+            onClick={handleShare}
+            disabled={!ready}
+            className="w-full flex items-center justify-center gap-2 px-5 py-4 md:py-5
+              rounded-2xl bg-[#FEE500] text-[#191919] font-medium text-sm md:text-base
+              active:scale-[0.98] transition-transform disabled:opacity-50"
+          >
+            {kakaoIcon}
+            카카오톡으로 공유하기
+          </button>
+
+          {/* 링크 복사 */}
+          <button
+            onClick={handleCopyLink}
+            className="w-full flex items-center justify-center gap-2 px-5 py-4 md:py-5
+              rounded-2xl bg-stone-100 border border-stone-200
+              text-stone-600 font-medium text-sm md:text-base
+              active:scale-[0.98] transition-transform"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </svg>
+            링크 복사하기
+          </button>
+        </section>
+      )}
     </>
   );
 }

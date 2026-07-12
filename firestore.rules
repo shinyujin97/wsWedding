@@ -59,9 +59,53 @@ service cloud.firestore {
         && request.resource.data.updatedAt == request.time;
     }
 
+    function validGuestbookPasswordAfter(entryId) {
+      return existsAfter(/databases/$(database)/documents/guestbook_passwords/$(entryId))
+        && getAfter(/databases/$(database)/documents/guestbook_passwords/$(entryId)).data.passwordHash is string
+        && getAfter(/databases/$(database)/documents/guestbook_passwords/$(entryId)).data.passwordHash.size() == 64
+        && getAfter(/databases/$(database)/documents/guestbook_passwords/$(entryId)).data.createdAt == request.time;
+    }
+
+    function validGuestbookPasswordCheck(entryId) {
+      return existsAfter(/databases/$(database)/documents/guestbook_password_checks/$(entryId))
+        && exists(/databases/$(database)/documents/guestbook_passwords/$(entryId))
+        && getAfter(/databases/$(database)/documents/guestbook_password_checks/$(entryId)).data.passwordHash == get(/databases/$(database)/documents/guestbook_passwords/$(entryId)).data.passwordHash
+        && getAfter(/databases/$(database)/documents/guestbook_password_checks/$(entryId)).data.checkedAt == request.time;
+    }
+
+    function validGuestbookEdit(entryId) {
+      return resource.data.passwordSalt is string
+        && validGuestbookPasswordCheck(entryId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'message', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['name', 'message', 'inviteCode', 'ownerUid', 'passwordSalt', 'passwordHash', 'createdAt', 'updatedAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 12
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 150
+        && request.resource.data.inviteCode == resource.data.inviteCode
+        && request.resource.data.passwordSalt == resource.data.passwordSalt
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    function validGuestbookSoftDelete(entryId) {
+      return resource.data.passwordSalt is string
+        && validGuestbookPasswordCheck(entryId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['deletedAt'])
+        && request.resource.data.keys().hasOnly(['name', 'message', 'inviteCode', 'ownerUid', 'passwordSalt', 'passwordHash', 'createdAt', 'updatedAt', 'deletedAt'])
+        && request.resource.data.name == resource.data.name
+        && request.resource.data.message == resource.data.message
+        && request.resource.data.inviteCode == resource.data.inviteCode
+        && request.resource.data.passwordSalt == resource.data.passwordSalt
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.deletedAt == request.time;
+    }
+
     match /guestbook_entries/{entryId} {
       allow read: if true;
-      allow create: if request.resource.data.keys().hasOnly(['name', 'message', 'inviteCode', 'createdAt'])
+      allow create: if request.resource.data.keys().hasOnly(['name', 'message', 'inviteCode', 'passwordSalt', 'createdAt'])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
         && request.resource.data.name.size() <= 12
@@ -71,8 +115,36 @@ service cloud.firestore {
         && request.resource.data.inviteCode is string
         && request.resource.data.inviteCode.size() > 0
         && request.resource.data.inviteCode.size() <= 32
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.passwordSalt is string
+        && request.resource.data.passwordSalt.size() == 32
+        && request.resource.data.createdAt == request.time
+        && validGuestbookPasswordAfter(entryId);
+      allow update: if isAdmin() || validGuestbookEdit(entryId) || validGuestbookSoftDelete(entryId);
+      allow delete: if isAdmin();
+    }
+
+    match /guestbook_passwords/{entryId} {
+      allow read: if false;
+      allow create: if request.resource.data.keys().hasOnly(['passwordHash', 'createdAt'])
+        && request.resource.data.passwordHash is string
+        && request.resource.data.passwordHash.size() == 64
+        && request.resource.data.createdAt == request.time
+        && existsAfter(/databases/$(database)/documents/guestbook_entries/$(entryId));
       allow update, delete: if isAdmin();
+    }
+
+    match /guestbook_password_checks/{entryId} {
+      allow read: if false;
+      allow write: if request.resource.data.keys().hasOnly(['passwordHash', 'checkedAt'])
+        && request.resource.data.passwordHash is string
+        && request.resource.data.passwordHash.size() == 64
+        && request.resource.data.checkedAt == request.time
+        && exists(/databases/$(database)/documents/guestbook_passwords/$(entryId))
+        && request.resource.data.passwordHash == get(/databases/$(database)/documents/guestbook_passwords/$(entryId)).data.passwordHash
+        && (
+          getAfter(/databases/$(database)/documents/guestbook_entries/$(entryId)).data.updatedAt == request.time
+          || getAfter(/databases/$(database)/documents/guestbook_entries/$(entryId)).data.deletedAt == request.time
+        );
     }
 
     match /invite_codes/{code} {

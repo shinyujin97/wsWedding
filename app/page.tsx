@@ -18,11 +18,22 @@ export default function Home() {
   // null = 아직 localStorage 확인 전 (SSR/hydration 대응)
   const [videosDone, setVideosDone] = useState<boolean | null>(null);
   const [musicPlaying, setMusicPlaying] = useState(false);
+  const [showTopActions, setShowTopActions] = useState(false);
 
   useEffect(() => {
     let seen = false;
     try { seen = window.localStorage?.getItem(SEEN_KEY) === '1'; } catch {}
     setVideosDone(seen);
+  }, []);
+
+  useEffect(() => {
+    const updateTopActions = () => {
+      const next = window.scrollY > 360;
+      setShowTopActions((current) => current === next ? current : next);
+    };
+    updateTopActions();
+    window.addEventListener('scroll', updateTopActions, { passive: true });
+    return () => window.removeEventListener('scroll', updateTopActions);
   }, []);
 
   const handleVideoComplete = () => {
@@ -34,6 +45,7 @@ export default function Home() {
   const requestMusicPlay = () => {
     window.dispatchEvent(new Event('wedding:request-music-play'));
   };
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   return (
     <>
@@ -91,6 +103,25 @@ export default function Home() {
           )}
         </AnimatePresence>
       </main>
+
+      {videosDone === true && showTopActions && (
+        <div className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-50 w-full max-w-[430px] md:max-w-[720px] -translate-x-1/2 px-4 pointer-events-none">
+          <div className="ml-auto flex w-10 flex-col gap-2 pointer-events-auto">
+            <KakaoShare variant="floating" />
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d8c39a]/70 bg-[#fffaf0]/95 text-[#7a6035] shadow-md ring-1 ring-white/80 backdrop-blur-md transition active:scale-95"
+              aria-label="맨 위로 이동"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M12 19V5" />
+                <path d="M5 12l7-7 7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

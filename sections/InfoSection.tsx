@@ -81,7 +81,7 @@ export default function InfoSection() {
             </div>
             <div>
               <p className="text-base md:text-lg font-medium tracking-wide text-stone-700" style={{ fontFamily: 'serif' }}>
-                아르베웨딩
+                아르베웨딩 라피네홀
               </p>
               {/* <p className="mt-1 text-[11px] text-stone-600">서울 강남구 봉은사로 302</p> */}
             </div>
