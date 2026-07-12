@@ -169,7 +169,7 @@ export default function KakaoShare({ variant = 'section' }: KakaoShareProps) {
       objectType: 'feed',
       content: {
         title: '신우진 ♥ 박선영 결혼합니다',
-        description: '2026년 10월 17일 토요일 오후 12시 50분\n아르베웨딩',
+        description: '2026년 10월 17일 토요일 오후 12시 50분\n아르베웨딩 라피네홀',
         imageUrl: THUMBNAIL_URL,
         link: {
           mobileWebUrl: shareUrl,

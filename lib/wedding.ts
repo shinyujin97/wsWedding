@@ -13,7 +13,7 @@ export const RELATIONSHIP_START = new Date('2016-04-05T00:00:00+09:00');
 export const WEDDING_LABEL = {
   dateKo: '2026년 10월 17일 토요일',
   timeKo: '오후 12시 50분',
-  venue: '아르베웨딩',
+  venue: '아르베웨딩 라피네홀',
   venueDetail: '',
   address: '서울 강남구 봉은사로 302',
 } as const;
