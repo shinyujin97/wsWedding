@@ -58,6 +58,10 @@ export default function InfoSection() {
       className="relative px-6 md:px-12 pt-4 md:pt-6 pb-6 md:pb-8 bg-[#FDFAF5]"
       style={{ opacity: sectionOpacity, y: sectionY }}
     >
+      <p className="mt-[-5px] mb-[20px] text-center text-[12px] md:text-[13px] tracking-[0.12em] text-stone-400">
+        액자를 터치해 보세요
+      </p>
+
       {/* 상단 다이아몬드 장식 */}
       <AnimatedBlock index={0}>
         <div className="flex items-center justify-center gap-4 pt-4">
