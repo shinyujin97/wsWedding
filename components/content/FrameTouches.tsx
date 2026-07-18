@@ -27,8 +27,8 @@ const GALLERY_ORDER = [6, 8, 9, 13, 4, 2, 1, 20, 5, 11, 19, 3, 18, 14, 7, 16, 15
 const GALLERY = GALLERY_ORDER.map((n) => (n === 10 ? '/editedImages/1-10-tie-slim.jpg' : `/weddingImages/1-${n}.jpg`));
 const photoSrc = (src: string) => (src.startsWith('/editedImages/') ? src : media(src));
 
-// 라이트박스/그리드가 쓰는 전체 사진(20장): 액자 대표 5장은 갤러리와 중복이라 제외.
-const ALL_PHOTOS = GALLERY;
+// 라이트박스/그리드가 쓰는 전체 사진: 액자 대표 5장은 갤러리와 중복이라 제외.
+const ALL_PHOTOS = [...GALLERY, '/images/frames/image.png'];
 
 // 라이트박스 상태: null = 닫힘. view = 'single'(캐러셀) | 'grid'(전체 사진 보기)
 type Lightbox = { index: number; view: 'single' | 'grid' };
@@ -205,6 +205,15 @@ export default function FrameTouches() {
       document.body.style.overflow = prev;
     };
   }, [lightbox]);
+
+  useEffect(() => {
+    const openGallery = () => {
+      setDirection(0);
+      setLightbox({ index: ALL_PHOTOS.length - 1, view: 'grid' });
+    };
+    window.addEventListener('wedding:open-gallery', openGallery);
+    return () => window.removeEventListener('wedding:open-gallery', openGallery);
+  }, []);
 
   // 엣지-백 제스처 차단 — 비패시브 touchmove 리스너로 기본 동작(뒤로가기/주소창 토글) 취소.
   // React onTouchMove 는 패시브라 preventDefault 가 안 먹어서 네이티브로 직접 등록한다.

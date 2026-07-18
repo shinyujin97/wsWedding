@@ -95,12 +95,19 @@ export default function WeddingCountdown() {
             <path d="M8 2L9.5 6.5L14 8L9.5 9.5L8 14L6.5 9.5L2 8L6.5 6.5L8 2Z" fill="#c2a06c" fillOpacity="0.55" />
           </svg>
 
-          <img
-            src={media('/images/frames/image.png')}
-            alt="우리의 추억"
-            draggable={false}
-            className="block w-full h-auto select-none"
-          />
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event('wedding:open-gallery'))}
+            aria-label="전체 사진 보기"
+            className="block w-full"
+          >
+            <img
+              src={media('/images/frames/image.png')}
+              alt="우리의 추억"
+              draggable={false}
+              className="block w-full h-auto select-none"
+            />
+          </button>
 
           <div className="relative px-4 pt-5 pb-5 bg-[#FDFAF5]/82">
             <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-[#c2a06c]/50 to-transparent" />
